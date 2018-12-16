@@ -12,3 +12,5 @@ assets = capital + liabilities
 while wotw != "exit": #wotw - это что?
 	for i in range(5): #цикл - 5 рабочих дней
 		for app in range(appsperday):
+			newappscore = np.randn(100)
+			if newappscore > 30:
