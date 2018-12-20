@@ -3,6 +3,7 @@
 import numpy as np
 import pandas as pd
 import matplotlib as mpl
+from datetime import datetime
 
 capital = 100000
 liabilities = 0
