@@ -3,6 +3,7 @@
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
+import random as rnd
 from datetime import datetime
 
 capital = 100000
