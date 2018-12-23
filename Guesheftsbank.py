@@ -3,21 +3,39 @@
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
-import random as rnd
+import random
 from datetime import datetime
 
 capital = 100000
 liabilities = 0
 placcount = 0
 assets = capital + liabilities
-cycle = 252
-accounts = pd.DataFrame(columns = ['AccType', 'ClientId', 'App_Id', 'Begindate', 'EndDate', 'BeginQ', 'EndQ', 'Status']) #пустой датафрейм
-while wotw != "exit": #wotw - это что?
-	for daynumber in range(cycle): #цикл - 252 рабочих дня
-		randnumloans = rnd.random
-		randnumdeposits = rnd.random #сначала задаём количество депозитов и кредитов на день
-		for customer in range(randnumloans):
-		for customer in range(randnumdeposits):
+days = 252
+id = 0
+accounts = pd.DataFrame(columns = ['AccType', 'ClientId', 'BeginDate', 'EndDate', 'BeginQ', 'EndQ'])
+for i in range(days):
+    randnumloans = random.choice(range(40))
+    randnumdeposits = random.choice(range(40))
+    for n in range(randnumloans):
+        accType = 'L'
+        clientId = id
+        beginDate = i
+        endDate = i + 5
+        beginQ = 100000
+        endQ = beginQ * 1.06
+        newcostomer = [accType, clientId, beginDate, endDate, beginQ, endQ]
+        accounts.loc[id] = newcostomer
+        id += 1
+    for n in range(randnumdeposits):
+        accType = 'D'
+        clientId = id
+        beginDate = i
+        endDate = i + 5
+        beginQ = 100000
+        endQ = beginQ * 1.03
+        newcostomer = [accType, clientId, beginDate, endDate, beginQ, endQ]
+        accounts.loc[id] = newcostomer
+        id += 1
 """Переменные:
 Заявка - Id, score - объединяются в датафрейм - генерируются во фрейме1, состоящем из 100 заявок, каждый день этот фрейм обнуляется, данные переписываются во фрейм2
 Score сравнивается с бенчмарком (30) - в MVP отказаться!!! 
@@ -27,4 +45,4 @@ Score сравнивается с бенчмарком (30) - в MVP отказ�
 Если счета баланса уходят в минус - дефолт
 Итерация датафрейма по счетам
 Внутри дня разделение на: открытие - активность - закрытие
-Каждый новый счёт оформлять в виде словаря
+Каждый новый счёт оформлять в виде словаря - на втором этапе. На первом в виде листа
