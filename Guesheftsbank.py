@@ -9,12 +9,13 @@ from datetime import datetime
 capital = 100000
 liabilities = 0
 placcount = 0
-appsperday = 40 #число заявок в день
 assets = capital + liabilities
 cycle = 252
 accounts = pd.DataFrame(columns = ['AccType', 'ClientId', 'App_Id', 'Begindate', 'EndDate', 'BeginQ', 'EndQ', 'Status']) #пустой датафрейм
 while wotw != "exit": #wotw - это что?
 	for daynumber in range(cycle): #цикл - 252 рабочих дня
+		randnumloans = rnd.random
+		randnumdeposits = rnd.random #сначала задаём количество депозитов и кредитов на день
 		for app in range(appsperday):
 """Переменные:
 Заявка - Id, score - объединяются в датафрейм - генерируются во фрейме1, состоящем из 100 заявок, каждый день этот фрейм обнуляется, данные переписываются во фрейм2
