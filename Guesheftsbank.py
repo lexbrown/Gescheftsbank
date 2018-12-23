@@ -12,6 +12,7 @@ placcount = 0
 appsperday = 40 #число заявок в день
 assets = capital + liabilities
 cycle = 252
+accounts = pd.DataFrame(columns = ['AccType', 'ClientId', 'App_Id', 'Begindate', 'EndDate', 'BeginQ', 'EndQ', 'Status']) #пустой датафрейм
 while wotw != "exit": #wotw - это что?
 	for daynumber in range(cycle): #цикл - 252 рабочих дня
 		for app in range(appsperday):
