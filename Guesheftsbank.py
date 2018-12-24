@@ -12,7 +12,7 @@ placcount = 0
 assets = capital + liabilities
 days = 252
 id = 0
-accounts = pd.DataFrame(columns = ['AccType', 'ClientId', 'BeginDate', 'EndDate', 'BeginQ', 'EndQ'])
+accounts = pd.DataFrame(columns = ['AccType', 'ClientId', 'BeginDate', 'EndDate', 'BeginQ', 'EndQ', 'Status'])
 for i in range(days):
     randnumloans = random.choice(range(40))
     randnumdeposits = random.choice(range(40))
@@ -23,7 +23,8 @@ for i in range(days):
         endDate = i + 5
         beginQ = 100000
         endQ = beginQ * 1.06
-        newcostomer = [accType, clientId, beginDate, endDate, beginQ, endQ]
+        status = 'Active'
+        newcostomer = [accType, clientId, beginDate, endDate, beginQ, endQ, status]
         accounts.loc[id] = newcostomer
         id += 1
     for n in range(randnumdeposits):
@@ -33,7 +34,8 @@ for i in range(days):
         endDate = i + 5
         beginQ = 100000
         endQ = beginQ * 1.03
-        newcostomer = [accType, clientId, beginDate, endDate, beginQ, endQ]
+        status = 'Active'
+        newcostomer = [accType, clientId, beginDate, endDate, beginQ, endQ, status]
         accounts.loc[id] = newcostomer
         id += 1
 """Переменные:
