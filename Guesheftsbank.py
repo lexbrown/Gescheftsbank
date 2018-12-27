@@ -5,6 +5,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import random
 from datetime import datetime
+from bs4 import BeautifulSoup
 
 capital = 100000
 liabilities = 0
