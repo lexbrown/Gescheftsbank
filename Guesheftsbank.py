@@ -61,6 +61,18 @@ print("    including loans: ", loanaccount)
 print("Capital: ", capital)
 print("Retained Earnings: ", placcount)
 print("Liabilities: ", liabilities)
+
+#Graphical Report
+graphRep = plt.figure(figsize=(10, 5))
+ax = graphRep.add_subplot(1, 1, 1)
+finalset = pd.DataFrame([[loanaccount, 0], [capital + placcount + liabilities - loanaccount, 0], 
+                        [0, capital], [0, placcount], [0, liabilities]], index = ['Loans', 'Cash', 'Equity', 'RE', 'Debt'], 
+    columns = ['Assets', 'Equity and Debt'])
+finalset.plot(ax = ax, kind = "bar", stacked = True)
+ax.set_ylabel("U.S. dollars", fontsize = 20)
+ax.set_title("Balance sheet", fontsize = 30)
+graphRep.savefig("report.png")
+
 """Переменные:
 Заявка - Id, score - объединяются в датафрейм - генерируются во фрейме1, состоящем из 100 заявок, каждый день этот фрейм обнуляется, данные переписываются во фрейм2
 Score сравнивается с бенчмарком (30) - в MVP отказаться!!! 
