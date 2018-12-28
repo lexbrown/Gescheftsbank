@@ -76,6 +76,12 @@ ax.set_ylabel("U.S. dollars", fontsize = 20)
 ax.set_title("Balance sheet", fontsize = 30)
 graphRep.savefig("report.png")
 
+"""
+def assets():
+    return capital + placcount + liabilities
+def cash():
+    return capital + placcount + liabilities - loanaccount
+
 """Переменные:
 Заявка - Id, score - объединяются в датафрейм - генерируются во фрейме1, состоящем из 100 заявок, каждый день этот фрейм обнуляется, данные переписываются во фрейм2
 Score сравнивается с бенчмарком (30) - в MVP отказаться!!! 
