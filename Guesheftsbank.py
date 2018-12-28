@@ -14,7 +14,7 @@ loanaccount = 0
 def assets():
     return capital + placcount + liabilities
 def cash():
-    return capital + placcount + liabilities - loanaccount
+    return asstes() - loanaccount
 
 days = 20
 id = 0 #Пусть клиентский айди начинается с 1
