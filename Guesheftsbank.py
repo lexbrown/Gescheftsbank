@@ -11,6 +11,10 @@ capital = 100000
 liabilities = 0
 placcount = 0
 loanaccount = 0
+def assets():
+    return capital + placcount + liabilities
+def cash():
+    return capital + placcount + liabilities - loanaccount
 
 days = 20
 id = 0 #Пусть клиентский айди начинается с 1
@@ -58,8 +62,8 @@ for i in range(days):   #номер дня это i+1
                 placcount += 60
 
 
-print("Assets: ", capital + placcount + liabilities)
-print("    including cash: ", capital + placcount + liabilities - loanaccount)
+print("Assets: ", assets())
+print("    including cash: ", cash())
 print("    including loans: ", loanaccount)
 print("Capital: ", capital)
 print("Retained Earnings: ", placcount)
@@ -75,12 +79,6 @@ finalset.plot(ax = ax, kind = "bar", stacked = True)
 ax.set_ylabel("U.S. dollars", fontsize = 20)
 ax.set_title("Balance sheet", fontsize = 30)
 graphRep.savefig("report.png")
-
-"""
-def assets():
-    return capital + placcount + liabilities
-def cash():
-    return capital + placcount + liabilities - loanaccount
 
 """Переменные:
 Заявка - Id, score - объединяются в датафрейм - генерируются во фрейме1, 
