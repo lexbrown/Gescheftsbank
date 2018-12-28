@@ -5,7 +5,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import random
 from datetime import datetime
-from bs4 import BeautifulSoup
+from bs4 import BeautifulSoup #в mvp не используется
 
 capital = 100000
 liabilities = 0
@@ -23,7 +23,7 @@ for i in range(days):   #номер дня это i+1
         accType = 'L'
         clientId = id + 1
         beginDate = i + 1 #это чтобы дня О не было
-        endDate = i + 6
+        endDate = beginDate + 5
         beginQ = 1000
         endQ = beginQ * 1.06
         status = 'Active'
@@ -35,7 +35,7 @@ for i in range(days):   #номер дня это i+1
         accType = 'D'
         clientId = id + 1
         beginDate = i + 1
-        endDate = i + 6
+        endDate = beginDate + 5
         beginQ = 1000
         endQ = beginQ * 1.03
         status = 'Active'
