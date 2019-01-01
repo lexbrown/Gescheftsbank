@@ -10,7 +10,7 @@ from bs4 import BeautifulSoup #в mvp не используется
 capital = 100000
 liabilities = 0
 placcount = 0
-loanaccount = 0
+loanaccount = 0 #еачальные переменные
 def assets():
     return capital + placcount + liabilities
 def cash():
