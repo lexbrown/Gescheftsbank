@@ -72,12 +72,14 @@ print("Liabilities: ", liabilities)
 #Graphical Report
 graphRep = plt.figure(figsize=(10, 5))
 ax = graphRep.add_subplot(1, 1, 1)
-finalset = pd.DataFrame([[loanaccount, 0], [capital + placcount + liabilities - loanaccount, 0], 
-                        [0, capital], [0, placcount], [0, liabilities]], index = ['Loans', 'Cash', 'Equity', 'RE', 'Debt'], 
+balancesheet = pd.DataFrame([[loanaccount, 0], [cash(), 0], 
+                        [0, capital], [0, placcount], [0, liabilities]], 
+    index = ['Loans', 'Cash', 'Equity', 'RE', 'Debt'], 
     columns = ['Assets', 'Equity and Debt'])
-finalset.plot(ax = ax, kind = "bar", stacked = True)
+balancesheet.T.plot(grid = True, rot = 0, ax = ax, kind = "bar", stacked = True, fontsize = 15)
 ax.set_ylabel("U.S. dollars", fontsize = 20)
 ax.set_title("Balance sheet", fontsize = 30)
+ax.legend(loc="best", fontsize = 12)
 graphRep.savefig("report.png")
 
 
