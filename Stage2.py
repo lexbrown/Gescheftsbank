@@ -1,12 +1,4 @@
-# -*- coding: utf-8 -*-
-"""
-Created on Sun Dec 23 19:12:19 2018
-
-@author: Lex
-
-round(float(np.random.rand(1)), 2)
-
-"""
+#Stage2. Добавлен P&L report
 
 import numpy as np
 import pandas as pd
