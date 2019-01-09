@@ -111,5 +111,8 @@ print()
 print("Total assets: ", assets())
 
 
+#Заняться оптимизацией
+#
+#
 
 
