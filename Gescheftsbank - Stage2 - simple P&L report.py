@@ -112,7 +112,7 @@ print("Total assets: ", assets())
 
 
 #Заняться оптимизацией
-#
+#Внедрить модель PD-LGD-EAD
 #
 
 
