@@ -42,7 +42,7 @@ for i in range(days):   #номер дня это i+1
         clientId = id + 1
         beginDate = i + 1 #это чтобы дня О не было
         endDate = i + 6
-        beginQ = random.choice(range(101))*100
+        beginQ = random.choice(range(1, 101))*100
         endQ = beginQ * 1.06
         status = 'Active'
         newcostomer = [accType, clientId, beginDate, endDate, beginQ, endQ, status]
@@ -54,7 +54,7 @@ for i in range(days):   #номер дня это i+1
         clientId = id + 1
         beginDate = i + 1
         endDate = i + 6
-        beginQ = random.choice(range(101))*100
+        beginQ = random.choice(range(1, 101))*100
         endQ = beginQ * 1.03
         status = 'Active'
         newcostomer = [accType, clientId, beginDate, endDate, beginQ, endQ, status]
