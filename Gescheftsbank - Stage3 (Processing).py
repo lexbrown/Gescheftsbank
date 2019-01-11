@@ -41,35 +41,35 @@ for i in range(days):   #номер дня это i+1
         clientId = id + 1
         beginDate = i + 1 #это чтобы дня О не было
         endDate = i + 6
-        beginQ = 1000
+        beginQ = random.choice(range(101))*100
         endQ = beginQ * 1.06
         status = 'Active'
         newcostomer = [accType, clientId, beginDate, endDate, beginQ, endQ, status]
         openaccounts.loc[len(openaccounts)] = newcostomer
         id += 1
-        loanaccount += 1000
+        loanaccount += beginQ
     for n in range(randnumdeposits):
         accType = 'D'
         clientId = id + 1
         beginDate = i + 1
         endDate = i + 6
-        beginQ = 1000
+        beginQ = random.choice(range(101))*100
         endQ = beginQ * 1.03
         status = 'Active'
         newcostomer = [accType, clientId, beginDate, endDate, beginQ, endQ, status]
         openaccounts.loc[len(openaccounts)] = newcostomer
         id += 1
-        liabilities += 1000
+        liabilities += beginQ
 #вечер
     for n in range(len(openaccounts)):
         if openaccounts.loc[n, 'EndDate'] == i+1 and openaccounts.loc[n, 'Status'] == 'Active':
             openaccounts.loc[n, 'Status'] = 'Closed'
             if openaccounts.loc[n, 'AccType'] == 'D':
-                liabilities -= 1000
-                interestcosts += 30
+                liabilities -= openaccounts.loc[n, 'beginQ']
+                interestcosts += openaccounts.loc[n, 'beginQ'] * 0.03
             else:
-                loanaccount -= 1000
-                interestincome += 60
+                loanaccount -= openaccounts.loc[n, 'beginQ']
+                interestincome += openaccounts.loc[n, 'beginQ'] * 0.06
             #начать closedaccounts
             closedaccounts.loc[idclosed] = openaccounts.loc[n]
             idclosed += 1
