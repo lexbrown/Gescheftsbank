@@ -1,10 +1,11 @@
-#Stage3. Внесение изменений
+#Geschaftsbank - Stage3. Внесение изменений
 
-#Заняться оптимизацией
-#Внедрить модель PD-LGD-EAD
-#Ввести стохастические параметры клиентов
-#Развести заёмщиков и кредиторов в разные датафреймы
-#Обязательно написать проверку на отрицательность кэша
+#Основные задачи:
+#   Заняться оптимизацией
+#   Внедрить модель PD-LGD-EAD
+#   Ввести стохастические параметры клиентов - В ПРОЦЕССЕ
+#   Развести заёмщиков и кредиторов в разные датафреймы
+#   Написать проверку на отрицательность кэша
 
 import numpy as np
 import pandas as pd
@@ -23,12 +24,6 @@ operationcosts = 0
 daily_outflow = 0
 daily_inflow = 0
 
-def assets():
-    return capital + netincome() + liabilities
-def cash():
-    return assets() - loanaccount
-def netincome():
-    return placcount - operationcosts
 
 days =  int(input("Введите количество дней: ")) #перевести на инпуты
 idclosed = 0
@@ -40,18 +35,45 @@ cash_balance = pd.DataFrame(columns = ['DayNumber', 'Balance', 'Daily outflows',
 #cash_balance = pd.Series([0])
 id = 0  #len(openaccounts) 
 
+def assets():
+    return capital + netincome() + liabilities
+def cash():
+    return assets() - loanaccount
+def placcount():
+    return interestincome - interestcosts
+def netincome():
+    return placcount() - operationcosts
+'''def interbank_loan():
+    accType = 'O/N'
+    clientId = id + 1
+    beginDate = i + 1
+    endDate = i + 2
+    beginQ = -2 * cash
+    endQ = beginQ * 1.01
+    status = 'Active'
+    newcostomer = [accType, clientId, beginDate, endDate, beginQ, endQ, status]
+    openaccounts.loc[len(openaccounts)] = newcostomer
+    global id
+    global liabilities
+    global daily_inflow
+    id += 1
+    liabilities += beginQ
+    daily_inflow += beginQ'''
+    
+
 #день
 for i in range(days):   #номер дня это i+1
     randnumloans = random.choice(range(100)) #чот сильно
     randnumdeposits = random.choice(range(100)) #чот тож, многовато для маленького банка то
+    #if cash() > assets()/10:
     for n in range(randnumloans):
         accType = 'L'
         clientId = id + 1
         beginDate = i + 1 #это чтобы дня О не было
         endDate = i + 6
         beginQ = random.choice(range(1, 101))*100
-        #if beginQ > cash():
-            #continue
+        if beginQ > cash():
+            continue
         endQ = beginQ * 1.06
         status = 'Active'
         newcostomer = [accType, clientId, beginDate, endDate, beginQ, endQ, status]
@@ -72,6 +94,7 @@ for i in range(days):   #номер дня это i+1
         id += 1
         liabilities += beginQ
         daily_inflow += beginQ
+            
 #вечер
     for n in range(len(openaccounts)):
         if openaccounts.loc[n, 'EndDate'] == i+1 and openaccounts.loc[n, 'Status'] == 'Active':
@@ -80,6 +103,10 @@ for i in range(days):   #номер дня это i+1
                 liabilities -= openaccounts.loc[n, 'BeginQ']
                 interestcosts += openaccounts.loc[n, 'BeginQ'] * 0.03
                 daily_outflow += (openaccounts.loc[n, 'BeginQ'] * 1.03)
+            elif openaccounts.loc[n, 'AccType'] == 'O/N':
+                liabilities -= openaccounts.loc[n, 'BeginQ']
+                interestcosts += openaccounts.loc[n, 'BeginQ'] * 0.01
+                daily_outflow += (openaccounts.loc[n, 'BeginQ'] * 1.01)
             else:
                 loanaccount -= openaccounts.loc[n, 'BeginQ']
                 interestincome += openaccounts.loc[n, 'BeginQ'] * 0.06
@@ -87,16 +114,33 @@ for i in range(days):   #номер дня это i+1
             #начать closedaccounts
             closedaccounts.loc[idclosed] = openaccounts.loc[n]
             idclosed += 1
+    if cash() < 0:
+        accType = 'O/N'
+        clientId = id + 1
+        beginDate = i + 1
+        endDate = i + 2
+        beginQ = -2 * cash()
+        endQ = beginQ * 1.01
+        status = 'Active'
+        newcostomer = [accType, clientId, beginDate, endDate, beginQ, endQ, status]
+        openaccounts.loc[len(openaccounts)] = newcostomer
+        id += 1
+        liabilities += beginQ
+        daily_inflow += beginQ
+        
+        
     #openaccounts = openaccounts.drop(np.where(openaccounts["Status"] == "Closed")[0]) - не работает более чем для 6 дней
     openaccounts = openaccounts[openaccounts.Status != "Closed"] #это ужасно
     openaccounts.index = np.arange(len(openaccounts))
     operationcosts += 200
+    daily_outflow += 200
+    placcount()
     cash_balance.loc[i] = [i+1, cash(), daily_outflow, daily_inflow]
     daily_outflow = 0
     daily_inflow = 0
     #cash_balance[i] = cash()
     #cash_balance.index = np.arange(days)
-placcount = interestincome - interestcosts
+    #placcount()
 cash_balance.index = cash_balance['DayNumber']
 #Reports:
 
@@ -111,7 +155,7 @@ balancesheet = pd.DataFrame([[loanaccount, 0], [cash(), 0],
     index = ['Loans', 'Cash', 'Equity', 'RE', 'Debt'], 
     columns = ['Assets', 'Equity and Debt'])
 incomestatement = pd.DataFrame([interestincome, interestcosts, 
-                                placcount, operationcosts, netincome()], 
+                                placcount(), operationcosts, netincome()], 
     index = ['Interest income', 'Interest costs (-)', 'Net profit margin', 'Operating costs (-)', 'Net income'], 
     columns = ['Accounts'])
 #incomestatement.index.name = "P&L accounts"
@@ -154,3 +198,4 @@ print()
 print(incomestatement)
 
 #Внедрить Statsmodel в 4й версии
+#Внедрить этап "Утро" - проверка условий
