@@ -1,16 +1,15 @@
-#Geschaftsbank - Stage3
+#Geschaftsbank - Stage3 (cash + pd,lgd,ead)
 
 #Основные задачи:
-#   Внедрить модель PD-LGD-EAD - ГОТОВО
-#   Ввести стохастические параметры клиентов - В ПРОЦЕССЕ
-#   Развести заёмщиков и кредиторов в разные датафреймы - ГОТОВО
-#   Написать проверку на отрицательность кэша - ГОТОВО
+#   Внедрить модель PD-LGD-EAD
+#   Ввести стохастические параметры клиентов (процентная ставка как функция от pd и lgd)
+#   Развести заёмщиков и кредиторов в разные датафреймы
+#   Написать проверку на отрицательность кэша
 
 import numpy as np
 import pandas as pd
 import random
 import matplotlib.pyplot as plt
-#import statsmodels.api as sm
 
 capital = 100000
 liabilities = 0
@@ -42,7 +41,7 @@ closed_loan_accounts = pd.DataFrame(columns = ['AccType', 'ClientId', 'BeginDate
 closed_deposit_accounts = pd.DataFrame(columns = ['AccType', 'ClientId', 'BeginDate', 
                                    'EndDate', 'BeginQ', 'EndQ', 'Status'])
 cash_balance = pd.DataFrame(columns = ['DayNumber', 'Balance', 'Daily outflows', 'Daily inflows'])
-#cash_balance = pd.Series([0])
+assets_series = pd.DataFrame(columns = ['DayNumber', 'Assets'])
 id = 0  #len(openaccounts) 
 
 def assets():
@@ -139,6 +138,8 @@ for i in range(days):   #номер дня это i+1
             #начать closedaccounts
             closed_deposit_accounts.loc[id_deposit_closed] = open_deposit_accounts.loc[n]
             id_deposit_closed += 1
+    operationcosts += 200
+    daily_outflow += 200
     if cash() < 0:
         accType = 'O/N'
         clientId = id + 1
@@ -153,23 +154,20 @@ for i in range(days):   #номер дня это i+1
         liabilities += beginQ
         daily_inflow += beginQ
         
-        
-    #openaccounts = openaccounts.drop(np.where(openaccounts["Status"] == "Closed")[0]) - не работает более чем для 6 дней
     open_loan_accounts = open_loan_accounts[open_loan_accounts.Status != "Closed"] #это ужасно
     open_deposit_accounts = open_deposit_accounts[open_deposit_accounts.Status != "Closed"] #дублирование - вообще ужас
     open_loan_accounts.index = np.arange(len(open_loan_accounts))
     open_deposit_accounts.index = np.arange(len(open_deposit_accounts))
-    operationcosts += 200
-    daily_outflow += 200
+    #operationcosts += 200
+    #daily_outflow += 200
     placcount()
     cash_balance.loc[i] = [i+1, cash(), daily_outflow, daily_inflow]
+    assets_series.loc[i] = [i+1, assets()]
     daily_outflow = 0
     daily_inflow = 0
-    #cash_balance[i] = cash()
-    #cash_balance.index = np.arange(days)
-    #placcount()
-    print("День ", i)
+    print("День ", i+1)
 cash_balance.index = cash_balance['DayNumber']
+assets_series.index = assets_series['DayNumber']
 #Reports:
 
 #Graphical Report
@@ -187,7 +185,6 @@ incomestatement = pd.DataFrame([interestincome, interestcosts,
     index = ['Interest income', 'Interest costs (-)', 'Net profit margin', 
              'Operating costs (-)', 'Default losses (-)', 'Net income'], 
     columns = ['Accounts'])
-#incomestatement.index.name = "P&L accounts"
 
 balancesheet.T.plot(grid = True, rot = 0, ax = ax1, kind = "bar", stacked = True, fontsize = 12)
 ax1.set_ylabel("U.S. dollars", fontsize = 15)
@@ -203,17 +200,19 @@ ax2.invert_yaxis()
 ax2.grid(True)
 
 cash_balance['Balance'].plot(grid = True, ax = ax3, marker = 'D', fontsize = 12, color = 'r')
+#ax3.fill_between(cash_balance['DayNumber'], cash_balance['Balance'], color = 'r')
+assets_series['Assets'].plot(grid = True, ax = ax3, marker = 'o', fontsize = 12, color = 'y')
 ax3.set_ylabel("U.S. dollars", fontsize = 15)
 ax3.set_title("Cash balance", fontsize = 25)
+ax3.legend(loc="best", fontsize = 12)
 
 cash_balance['Daily outflows'].plot(grid = True, ax = ax4, marker = 's', fontsize = 12, color = 'g')
 cash_balance['Daily inflows'].plot(grid = True, ax = ax4, marker = 'v', fontsize = 12, color = 'b')
 ax4.set_title("Daily flows", fontsize = 25)
 ax4.legend(loc="best", fontsize = 12)
-#ax4.set_xticks(cash_balance['DayNumber'])
 
 plt.subplots_adjust(wspace=0.5)
-graphRep.savefig("Report -Stage3.png")
+graphRep.savefig("Report - Stage 3.png")
 
 #Table reports:
 print()
@@ -230,8 +229,10 @@ print('Овернайты на рынке межбанковских креди�
       len(closed_deposit_accounts.loc[closed_deposit_accounts.AccType == 'O/N']) +
       len(open_deposit_accounts.loc[open_deposit_accounts.AccType == 'O/N']),
       ' раз:')
-print(closed_deposit_accounts.loc[closed_deposit_accounts.AccType == 'O/N'])
-print(open_deposit_accounts.loc[open_deposit_accounts.AccType == 'O/N'])
+if len(closed_deposit_accounts.loc[closed_deposit_accounts.AccType == 'O/N']) != 0:
+    print(closed_deposit_accounts.loc[closed_deposit_accounts.AccType == 'O/N'])
+if len(open_deposit_accounts.loc[open_deposit_accounts.AccType == 'O/N']) != 0:
+    print(open_deposit_accounts.loc[open_deposit_accounts.AccType == 'O/N'])
 
 #гипотеза: RE коррелирует с кэшем
 #Внедрить Statsmodel в 4й версии
