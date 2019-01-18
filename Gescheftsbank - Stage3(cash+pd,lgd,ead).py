@@ -1,4 +1,4 @@
-#Geschaftsbank - Stage3 (cash + pd,lgd,ead)
+#Geschaftsbank - Stage3 (cash + pd,lgd,ead) - этап завершён
 
 #Основные задачи:
 #   Внедрить модель PD-LGD-EAD
