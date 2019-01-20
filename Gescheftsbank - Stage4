@@ -20,12 +20,22 @@ placcount = 0
 loanaccount = 0
 operationcosts = 0
 default_losses = 0
+reserves = 0
 
 risk_free_rate = 0.06
 
 daily_outflow = 0
 daily_inflow = 0
 
+gesh_db = mysql.connector.connect(
+  host="localhost",
+  user="lexbrown",
+  passwd="******"
+)
+
+mycursor = mydb.cursor()
+
+mycursor.execute("CREATE DATABASE mydatabase")
 
 days =  int(input("Введите количество дней: ")) #перевести на инпуты
 max_clients = int(input("Введите максимальное количество клиентов в день: "))
