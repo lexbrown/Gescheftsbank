@@ -33,9 +33,9 @@ gesh_db = mysql.connector.connect(
   passwd="******"
 )
 
-mycursor = mydb.cursor()
+gesh_cursor = gesh_db.cursor()
 
-mycursor.execute("CREATE DATABASE mydatabase")
+gesh_cursor.execute("CREATE DATABASE Gesh-bank_database")
 
 days =  int(input("Введите количество дней: ")) #перевести на инпуты
 max_clients = int(input("Введите максимальное количество клиентов в день: "))
