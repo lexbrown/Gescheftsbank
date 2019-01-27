@@ -35,7 +35,7 @@ gesh_init = mysql.connector.connect(
 
 gesh_init_cursor = gesh_init.cursor()
 
-gesh_init_cursor.execute("CREATE DATABASE Gesh_database")
+gesh_init_cursor.execute("CREATE DATABASE IF NOT EXISTS Gesh_database")
 
 gesh_db = mysql.connector.connect(
   host="localhost",
