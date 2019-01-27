@@ -28,15 +28,24 @@ risk_free_rate = 0.06
 daily_outflow = 0
 daily_inflow = 0
 
+gesh_init = mysql.connector.connect(
+  host="localhost",
+  user="lexbrown",
+  passwd="******")
+
+gesh_init_cursor = gesh_init.cursor()
+
+gesh_init_cursor.execute("CREATE DATABASE Gesh_database")
+
 gesh_db = mysql.connector.connect(
   host="localhost",
   user="lexbrown",
-  passwd="******"
-)
+  passwd="******",
+  database = "Gesh_database")
 
-gesh_cursor = gesh_db.cursor()
+gesh_db_cursor = gesh_db.cursor()
 
-gesh_cursor.execute("CREATE DATABASE Gesh-bank_database")
+
 
 days =  int(input("Введите количество дней: ")) #перевести на инпуты
 max_clients = int(input("Введите максимальное количество клиентов в день: "))
