@@ -10,7 +10,7 @@ import numpy as np
 import pandas as pd
 import random
 import matplotlib.pyplot as plt
-import mysql.connector
+import mysql.connector as cnt
 #import requests #будем парсить через данный модуль
 #import statsmodels as sm
 
@@ -29,7 +29,7 @@ risk_free_rate = 0.06
 daily_outflow = 0
 daily_inflow = 0
 
-gesh_init = mysql.connector.connect(
+gesh_init = cnt.connect(
   host="localhost",
   user="lexbrown",
   passwd="******")
@@ -38,7 +38,7 @@ gesh_init_cursor = gesh_init.cursor()
 
 gesh_init_cursor.execute("CREATE DATABASE IF NOT EXISTS Gesh_database")
 
-gesh_db = mysql.connector.connect(
+gesh_db = cnt.connect(
   host="localhost",
   user="lexbrown",
   passwd="******",
