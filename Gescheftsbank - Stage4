@@ -126,7 +126,7 @@ for i in range(days):   #номер дня это i+1
         accType = 'D'
         clientId = id + 1
         beginDate = i + 1
-        endDate = i + 6
+        endDate = i + 1 + random.choice(range(1, 6)) * 5
         beginQ = random.choice(range(1, 101))*100
         endQ = beginQ * 1.03
         status = 'Active'
