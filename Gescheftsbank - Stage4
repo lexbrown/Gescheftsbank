@@ -12,6 +12,7 @@ import random
 import matplotlib.pyplot as plt
 import mysql.connector
 #import requests #будем парсить через данный модуль
+#import statsmodels as sm
 
 capital = 100000
 liabilities = 0
