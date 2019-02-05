@@ -9,7 +9,7 @@ testdb = mysql.connector.connect(
   database = "testdatabase"
 )
 
-#print(testdb) - testdb
+#print(testdb) - 
 
 testcursor = testdb.cursor()
 
