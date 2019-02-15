@@ -1,4 +1,4 @@
-# Test MySQL 2ю
+# Test MySQL 2
 
 import pandas as pd
 import numpy as np
