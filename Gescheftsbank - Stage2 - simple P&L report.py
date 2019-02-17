@@ -110,8 +110,3 @@ print(balancesheet)
 print()
 print("Total assets: ", assets())
 
-
-
-
-
-
