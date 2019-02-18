@@ -107,7 +107,7 @@ for i in range(days):   #номер дня это i+1
             continue
         status = 'Active'
         prob_d = random.choice(range(1, 21))/100
-        lgd = random.choice(range(10, 101, 10))/100
+        lgd = round(np.random.beta(2, 4), 1) + 0.1
         interest_rate = (risk_free_rate + prob_d * lgd) / (1 - prob_d)
         endQ = beginQ * (1 + interest_rate)
         random_default = random.choice(range(1, 101))/100
