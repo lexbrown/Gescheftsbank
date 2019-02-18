@@ -235,6 +235,9 @@ cash_balance['Daily inflows'].plot(grid = True, ax = ax4, marker = 'v', fontsize
 ax4.set_title("Daily flows", fontsize = 25)
 ax4.legend(loc="best", fontsize = 12)
 
+unionframe = pd.concat([closed_loan_accounts, open_loan_accounts], axis = 0)
+unionframe.index = np.arange(len(unionframe))
+
 plt.subplots_adjust(wspace=0.5)
 graphRep.savefig("Report - Stage 4.png")
 
