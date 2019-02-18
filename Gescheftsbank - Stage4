@@ -194,10 +194,12 @@ assets_series.index = assets_series['DayNumber']
 
 #Graphical Report
 graphRep = plt.figure(figsize=(15, 10))
-ax1 = graphRep.add_subplot(2, 2, 1)
-ax2 = graphRep.add_subplot(2, 2, 2)
-ax3 = graphRep.add_subplot(2, 2, 3)
-ax4 = graphRep.add_subplot(2, 2, 4)
+ax1 = graphRep.add_subplot(3, 2, 1)
+ax2 = graphRep.add_subplot(3, 2, 2)
+ax3 = graphRep.add_subplot(3, 2, 3)
+ax4 = graphRep.add_subplot(3, 2, 4)
+ax5 = graphRep.add_subplot(3, 2, 5)
+ax6 = graphRep.add_subplot(3, 2, 6)
 balancesheet = pd.DataFrame([[loanaccount, 0], [cash(), 0], 
                         [0, capital], [0, netincome()], [0, liabilities]], 
     index = ['Loans', 'Cash', 'Equity', 'RE', 'Debt'], 
