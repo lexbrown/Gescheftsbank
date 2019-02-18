@@ -236,7 +236,7 @@ ax4.set_title("Daily flows", fontsize = 25)
 ax4.legend(loc="best", fontsize = 12)
 
 plt.subplots_adjust(wspace=0.5)
-graphRep.savefig("Report - Stage 3.png")
+graphRep.savefig("Report - Stage 4.png")
 
 #Table reports:
 print()
