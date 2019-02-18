@@ -206,7 +206,7 @@ balancesheet = pd.DataFrame([[loanaccount, 0], [cash(), 0],
     columns = ['Assets', 'Equity and Debt'])
 incomestatement = pd.DataFrame([interestincome, interestcosts, 
                                 placcount(), operationcosts, default_losses, netincome()], 
-    index = ['Interest income', 'Interest costs (-)', 'Net profit margin', 
+    index = ['Interest income', 'Interest costs (-)', 'Net interest income', 
              'Operating costs (-)', 'Default losses (-)', 'Net income'], 
     columns = ['Accounts'])
 
