@@ -238,6 +238,12 @@ ax4.legend(loc="best", fontsize = 12)
 unionframe = pd.concat([closed_loan_accounts, open_loan_accounts], axis = 0)
 unionframe.index = np.arange(len(unionframe))
 
+ax5.hist(unionframe['LGD'], bins = 11)
+ax5.set_title("LGD Distribution", fontsize = 25)
+
+ax6.hist(unionframe['PD'], bins = 21)
+ax6.set_title("PD Distribution", fontsize = 25)
+
 plt.subplots_adjust(wspace=0.5)
 graphRep.savefig("Report - Stage 4.png")
 
