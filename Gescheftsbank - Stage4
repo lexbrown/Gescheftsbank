@@ -188,8 +188,8 @@ for i in range(days):   #номер дня это i+1
     daily_outflow = 0
     daily_inflow = 0
     print("День ", i+1)
-cash_balance.index = cash_balance['DayNumber']
-assets_series.index = assets_series['DayNumber']
+#cash_balance.index = cash_balance['DayNumber'] - может и зря закомментил
+#assets_series.index = assets_series['DayNumber']
 #Reports:
 
 #Graphical Report
