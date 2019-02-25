@@ -40,24 +40,6 @@ risk_free_rate = 0.06
 daily_outflow = 0
 daily_inflow = 0
 
-gesh_init = cnt.connect(
-  host="localhost",
-  user="lexbrown",
-  passwd="******")
-
-gesh_init_cursor = gesh_init.cursor()
-
-gesh_init_cursor.execute("CREATE DATABASE IF NOT EXISTS Gesh_database")
-
-gesh_db = cnt.connect(
-  host="localhost",
-  user="lexbrown",
-  passwd="******",
-  database = "Gesh_database")
-
-gesh_db_cursor = gesh_db.cursor()
-
-
 
 days =  int(input("Введите количество дней: ")) #перевести на инпуты
 max_clients = int(input("Введите максимальное количество клиентов в день: "))
