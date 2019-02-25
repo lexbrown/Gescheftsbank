@@ -11,8 +11,14 @@ import pandas as pd
 import random
 import matplotlib.pyplot as plt
 import mysql.connector as cnt
+#import statsmodels.api as sm
+from sqlalchemy import create_engine
+try:
+    import pymysql
+    pymysql.install_as_MySQLdb()
+except ImportError:
+    pass
 #import requests #будем парсить через данный модуль
-#import statsmodels as sm
 
 capital = 100000
 liabilities = 0
@@ -269,4 +275,4 @@ if len(open_deposit_accounts.loc[open_deposit_accounts.AccType == 'O/N']) != 0:
 
 #гипотеза: RE коррелирует с кэшем
 #Внедрить Statsmodel в 4й версии
-#Внедрить этап "Утро" - проверка условий
+#Внедрить этап "Утро" - проверка условий 
