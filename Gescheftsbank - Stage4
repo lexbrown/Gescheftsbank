@@ -63,6 +63,13 @@ days =  int(input("Введите количество дней: ")) #перев
 max_clients = int(input("Введите максимальное количество клиентов в день: "))
 id_loan_closed = 0
 id_deposit_closed = 0
+
+loan_accounts = pd.DataFrame(columns = ['AccType', 'ClientId', 'BeginDate', 'EndDate', 'BeginQ', 'EndQ', 'PD', 'LGD', 
+                                   'Interest rate','Status', 'Random', 'Default function'])
+pd.DataFrame(loan_accounts).to_sql('loan_accounts', con = engine, index = False, if_exists = 'replace')
+deposit_accounts = pd.DataFrame(columns = ['AccType', 'ClientId', 'BeginDate', 'EndDate', 'BeginQ', 'EndQ', 'Status'])
+pd.DataFrame(deposit_accounts).to_sql('deposit_accounts', con = engine, index = False, if_exists = 'replace')
+
 open_loan_accounts = pd.DataFrame(columns = ['AccType', 'ClientId', 'BeginDate', 
                                    'EndDate', 'BeginQ', 'EndQ', 'PD', 'LGD', 
                                    'Interest rate','Status', 'Random', 'Default function'])
