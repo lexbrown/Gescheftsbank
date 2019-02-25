@@ -20,6 +20,11 @@ except ImportError:
     pass
 #import requests #будем парсить через данный модуль
 
+db_connector = cnt.connect(host="localhost", user="lexbrown", passwd="***")
+bank_cursor = db_connector.cursor()
+bank_cursor.execute("CREATE DATABASE IF NOT EXISTS Geshbank")
+engine = create_engine('mysql+mysqldb://lexbrown:***@localhost/Geshbank', echo=False)
+
 capital = 100000
 liabilities = 0
 interestincome = 0
