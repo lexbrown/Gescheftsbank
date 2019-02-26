@@ -51,7 +51,12 @@ loan_accounts = pd.DataFrame(columns = ['AccType', 'ClientId', 'BeginDate', 'End
 pd.DataFrame(loan_accounts).to_sql('loan_accounts', con = engine, index = False, if_exists = 'replace')
 deposit_accounts = pd.DataFrame(columns = ['AccType', 'ClientId', 'BeginDate', 'EndDate', 'BeginQ', 'EndQ', 'Status'])
 pd.DataFrame(deposit_accounts).to_sql('deposit_accounts', con = engine, index = False, if_exists = 'replace')
+cash_balance = pd.DataFrame(columns = ['DayNumber', 'Balance', 'Daily outflows', 'Daily inflows'])
+cash_balance.to_sql('cash_balance', con = engine, index = False, if_exists = 'replace')
+assets_series = pd.DataFrame(columns = ['DayNumber', 'Assets'])
+assets_series.to_sql('assets_series', con = engine, index = False, if_exists = 'replace')
 
+'''
 open_loan_accounts = pd.DataFrame(columns = ['AccType', 'ClientId', 'BeginDate', 
                                    'EndDate', 'BeginQ', 'EndQ', 'PD', 'LGD', 
                                    'Interest rate','Status', 'Random', 'Default function'])
@@ -64,6 +69,8 @@ closed_deposit_accounts = pd.DataFrame(columns = ['AccType', 'ClientId', 'BeginD
                                    'EndDate', 'BeginQ', 'EndQ', 'Status'])
 cash_balance = pd.DataFrame(columns = ['DayNumber', 'Balance', 'Daily outflows', 'Daily inflows'])
 assets_series = pd.DataFrame(columns = ['DayNumber', 'Assets'])
+'''
+
 id = 0  #len(openaccounts) 
 
 def assets():
