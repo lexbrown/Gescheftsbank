@@ -30,7 +30,7 @@ val = [['FR', 'Paris', 'Euro'], ['GR', 'Berlin', 'Euro'],
                         ['TR', 'Ankra', 'Lira'], ['GB', 'London', 'Pound']]
 trial_new_cursor.executemany(sql, val)
 
-trial2db.commit()
+trial2db.commit() 
 
 pause = input('May I drop the table?')
 
