@@ -1,6 +1,7 @@
 import numpy as np #optional
 import pandas as pd
 import matplotlib.pyplot as plt
+import scipy
 
 amazon = pd.read_csv("from/amzn.csv", index_col=0, parse_dates=True)["Adj Close"]
 fig = plt.figure(figsize=(16, 8))
