@@ -80,8 +80,6 @@ ax.set_title("Balance sheet", fontsize = 30)
 ax.legend(loc="best", fontsize = 12)
 graphRep.savefig("report.png")
 
-
-
 """Переменные:
 Заявка - Id, score - объединяются в датафрейм - генерируются во фрейме1, 
 состоящем из 100 заявок, каждый день этот фрейм обнуляется, данные переписываются во фрейм2
