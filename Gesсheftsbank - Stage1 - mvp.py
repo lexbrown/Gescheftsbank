@@ -5,8 +5,6 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import random
 
-
-
 capital = 100000
 liabilities = 0
 placcount = 0
