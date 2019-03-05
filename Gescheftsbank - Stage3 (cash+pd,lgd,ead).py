@@ -67,7 +67,7 @@ def netincome():
     global daily_inflow
     id += 1
     liabilities += beginQ
-    daily_inflow += beginQ'''
+    daily_inflow += beginQ''' #задел
     
 
 #день
