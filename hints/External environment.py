@@ -14,4 +14,4 @@ for i in x:
 
 figura = plt.figure(figsize=(15, 7))
 sub1 = figura.add_subplot(1,1,1)
-sub1.plot(df.Y)
+sub1.plot(df['Y'])
