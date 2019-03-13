@@ -1,4 +1,4 @@
-#Geschaftsbank - Stage4. Draft 03.13.2019
+#Geschaftsbank - Stage4. Draft 03.13.2019 wtf
 
 #Основные задачи:
 #   Ввести стохастические параметры клиентов - В ПРОЦЕССЕ
