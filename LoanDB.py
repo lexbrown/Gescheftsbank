@@ -1,5 +1,5 @@
 import mysql.connector
-import
+
 
 loandb = mysql.connector.connect(
   host="localhost",
