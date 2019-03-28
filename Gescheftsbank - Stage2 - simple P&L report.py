@@ -1,6 +1,6 @@
 #Stage2. Добавлен P&L report
 
-import numpy as np #1
+import numpy as np #123
 import pandas as pd
 import random
 import matplotlib.pyplot as plt
