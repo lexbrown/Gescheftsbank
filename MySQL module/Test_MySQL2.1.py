@@ -1,5 +1,4 @@
 # Test MySQL 2.1
-#foobar
 
 import pandas as pd
 import numpy as np
