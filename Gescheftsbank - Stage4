@@ -3,7 +3,7 @@
 ################################################
 
 lex = pd.read_sql_query('SELECT EndDate FROM geshbank.loan_accounts WHERE ClientId = 3042', con = engine)
-
+проблема - он считывает данные как строковые значения
 
 ################################################
 
