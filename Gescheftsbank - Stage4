@@ -1,5 +1,15 @@
 #Geschaftsbank - Stage4 (MySQL + cash management)
 
+################################################
+
+lex = pd.read_sql_query('SELECT EndDate FROM geshbank.loan_accounts WHERE ClientId = 3042', con = engine)
+
+
+################################################
+
+
+
+
 #Основные задачи:
 #   Внедрить MySQL
 #   Ввести стохастические параметры клиентов (сроки)
