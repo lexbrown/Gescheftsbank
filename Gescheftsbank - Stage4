@@ -41,7 +41,38 @@ db_connector = cnt.connect(host="localhost", user="lexbrown", passwd="***")
 bank_cursor = db_connector.cursor()
 bank_cursor.execute("CREATE DATABASE IF NOT EXISTS Geshbank")
 #bank_cursor.execute("CREATE TABLE IF NOT EXISTS Geshbank.Vovochka (Aaa int, Bbb int, Ccc varchar(255))")
+crTable_la = "CREATE TABLE IF NOT EXISTS Geshbank.loan_accounts \
+                (AccType VARCHAR(255), \
+                ClientId INT, \
+                BeginDate INT, \
+                EndDate INT, \
+                BeginQ INT, \
+                EndQ DOUBLE(30, 2), \
+                PD DOUBLE(10, 2), \
+                LGD DOUBLE(10, 2), \
+                InterestRate DOUBLE(10, 4), \
+                Status VARCHAR(255), \
+                Random DOUBLE(10, 4), \
+                DefaultFunc DOUBLE(10, 4))"
+crTable_da = "CREATE TABLE IF NOT EXISTS Geshbank.deposit_accounts \
+                (AccType VARCHAR(255), \
+                ClientId INT, \
+                BeginDate INT, \
+                EndDate INT, \
+                BeginQ INT, \
+                EndQ DOUBLE(30, 2), \
+                Status VARCHAR(255))"
+crTable_bf = "CREATE TABLE IF NOT EXISTS Geshbank.balance_frame \
+                (DayNumber INT, \
+                CashBalance INT, \
+                AssetBalance INT, \
+                DailyCashInflow DOUBLE(30, 2), \
+                DailyCashOutflow DOUBLE(30, 2))"
+bank_cursor.execute(crTable_la)
+bank_cursor.execute(crTable_da)
+bank_cursor.execute(crTable_bf)
 engine = create_engine('mysql+mysqldb://lexbrown:***@localhost/Geshbank', echo=False)
+
 
 capital = 100000
 liabilities = 0
@@ -51,7 +82,9 @@ placcount = 0
 loanaccount = 0
 operationcosts = 0
 default_losses = 0
-reserves = 0
+
+reserve_expenses = 0
+reserve_recovery = 0
 
 risk_free_rate = 0.06
 
@@ -64,31 +97,34 @@ max_clients = int(input("Введите максимальное количес�
 id_loan_closed = 0
 id_deposit_closed = 0
 
+
+
+"""
 loan_accounts = pd.DataFrame(columns = ['AccType', 'ClientId', 'BeginDate', 'EndDate', 'BeginQ', 'EndQ', 'PD', 'LGD', 
-                                   'Interest rate','Status', 'Random', 'Default function'])
+                                   'InterestRate','Status', 'Random', 'DefaultFunc'])
 pd.DataFrame(loan_accounts).to_sql('loan_accounts', con = engine, index = False, if_exists = 'replace')
 deposit_accounts = pd.DataFrame(columns = ['AccType', 'ClientId', 'BeginDate', 'EndDate', 'BeginQ', 'EndQ', 'Status'])
 pd.DataFrame(deposit_accounts).to_sql('deposit_accounts', con = engine, index = False, if_exists = 'replace')
-cash_balance = pd.DataFrame(columns = ['DayNumber', 'Balance', 'Daily outflows', 'Daily inflows'])
-cash_balance.to_sql('cash_balance', con = engine, index = False, if_exists = 'replace')
+balance_frame = pd.DataFrame(columns = ['DayNumber', 'CashBalance', 'AssetBalance', 'DailyCashInflow', 'DailyCashOutflow'])
+balance_frame.to_sql('balance_frame', con = engine, index = False, if_exists = 'replace')
+"""
+
+
+
+
+
+
+'''
 assets_series = pd.DataFrame(columns = ['DayNumber', 'Assets'])
 assets_series.to_sql('assets_series', con = engine, index = False, if_exists = 'replace')
-
-'''
-open_loan_accounts = pd.DataFrame(columns = ['AccType', 'ClientId', 'BeginDate', 
-                                   'EndDate', 'BeginQ', 'EndQ', 'PD', 'LGD', 
-                                   'Interest rate','Status', 'Random', 'Default function'])
-open_deposit_accounts = pd.DataFrame(columns = ['AccType', 'ClientId', 'BeginDate', 
-                                   'EndDate', 'BeginQ', 'EndQ', 'Status'])
-closed_loan_accounts = pd.DataFrame(columns = ['AccType', 'ClientId', 'BeginDate', 
-                                   'EndDate', 'BeginQ', 'EndQ', 'PD', 'LGD', 
-                                   'Interest rate', 'Status', 'Random', 'Default function'])
-closed_deposit_accounts = pd.DataFrame(columns = ['AccType', 'ClientId', 'BeginDate', 
-                                   'EndDate', 'BeginQ', 'EndQ', 'Status'])
-cash_balance = pd.DataFrame(columns = ['DayNumber', 'Balance', 'Daily outflows', 'Daily inflows'])
-assets_series = pd.DataFrame(columns = ['DayNumber', 'Assets'])
 '''
 
+
+
+
+
+
+#cash_balance = pd.Series([0])
 id = 0  #len(openaccounts) 
 
 def assets():
@@ -97,63 +133,54 @@ def cash():
     return assets() - loanaccount
 def placcount():
     return interestincome - interestcosts
+def reserves():
+    return reserve_expenses - reserve_recovery
 def netincome():
     return placcount() - operationcosts - default_losses
-'''def interbank_loan():
-    accType = 'O/N'
-    clientId = id + 1
-    beginDate = i + 1
-    endDate = i + 2
-    beginQ = -2 * cash
-    endQ = beginQ * 1.01
-    status = 'Active'
-    newcostomer = [accType, clientId, beginDate, endDate, beginQ, endQ, status]
-    openaccounts.loc[len(openaccounts)] = newcostomer
-    global id
-    global liabilities
-    global daily_inflow
-    id += 1
-    liabilities += beginQ
-    daily_inflow += beginQ'''
-    
+
 
 #день
 for i in range(days):   #номер дня это i+1
     randnumloans = random.choice(range(max_clients)) #чот сильно
-    randnumdeposits = random.choice(range(max_clients)) #чот тож, многовато для маленького банка то
+    #randnumloans = (10 + 15 * np.sin(i / 5) + i)
+    #randnumdeposits = (10 + 15 * np.sin(i / 5) + i) #чот тож, многовато для маленького банка то
+    randnumdeposits = random.choice(range(max_clients)) #чот сильно
     #if cash() > assets()/10:
-    for n in range(randnumloans):
+    for n in range(int(randnumloans)):
         accType = 'L'
         clientId = id + 1
         beginDate = i + 1 #это чтобы дня О не было
-        endDate = i + 1 + random.choice(range(1, 6)) * 5
+        endDate = i + 1 + random.choice(range(2, 16)) * 10
         beginQ = random.choice(range(1, 101))*100
         if beginQ > cash():
             continue
         status = 'Active'
         prob_d = random.choice(range(1, 21))/100
         lgd = round(np.random.beta(2, 4), 1) + 0.1
-        interest_rate = (risk_free_rate + prob_d * lgd) / (1 - prob_d)
-        endQ = beginQ * (1 + interest_rate)
+        interest_rate = round((risk_free_rate + prob_d * lgd) /(1 - prob_d), 4)
+        endQ = round(beginQ * (1 + interest_rate * (endDate - beginDate) / 252), 2)
         random_default = random.choice(range(1, 101))/100
         default_function = random_default * np.exp(prob_d)
-        newcostomer = [accType, clientId, beginDate, 
-                       endDate, beginQ, endQ, prob_d, lgd, interest_rate, status,
-                       random_default, default_function]
-        open_loan_accounts.loc[len(open_loan_accounts)] = newcostomer
+        #newcustomer = [accType, clientId, beginDate, endDate, beginQ, endQ, prob_d, lgd, interest_rate, status, random_default, default_function]
+        #open_loan_accounts.loc[len(open_loan_accounts)] = newcustomer
+        pd.DataFrame([{'AccType':accType, 'ClientId':clientId, 'BeginDate':beginDate, 'EndDate':endDate, 
+                      'BeginQ':beginQ, 'EndQ':endQ, 'PD':prob_d, 'LGD':lgd, 'InterestRate':interest_rate, 'Status':status,
+                       'Random':random_default, 'DefaultFunc':default_function}]).to_sql('loan_accounts', con = engine, index = False, if_exists = 'append')
         id += 1
         loanaccount += beginQ
         daily_outflow += beginQ
-    for n in range(randnumdeposits):
+        reserve_expenses += (beginQ * prob_d * lgd)
+    for n in range(int(randnumdeposits)):
         accType = 'D'
         clientId = id + 1
         beginDate = i + 1
-        endDate = i + 1 + random.choice(range(1, 6)) * 5
+        endDate = i + 1 + random.choice(range(2, 16)) * 10
         beginQ = random.choice(range(1, 101))*100
-        endQ = beginQ * 1.03
+        endQ = round(beginQ * (1 + 0.03 * (endDate - beginDate) / 252), 2)
         status = 'Active'
-        newcostomer = [accType, clientId, beginDate, endDate, beginQ, endQ, status]
-        open_deposit_accounts.loc[len(open_deposit_accounts)] = newcostomer
+        #newcustomer = [accType, clientId, beginDate, endDate, beginQ, endQ, status]
+        #open_deposit_accounts.loc[len(open_deposit_accounts)] = newcustomer
+        pd.DataFrame([{'AccType':accType, 'ClientId':clientId, 'BeginDate':beginDate, 'EndDate':endDate, 'BeginQ':beginQ, 'EndQ':endQ, 'Status':status}]).to_sql('deposit_accounts', con = engine, index = False, if_exists = 'append')
         id += 1
         liabilities += beginQ
         daily_inflow += beginQ
