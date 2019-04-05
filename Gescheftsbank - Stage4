@@ -40,6 +40,7 @@ except ImportError:
 db_connector = cnt.connect(host="localhost", user="lexbrown", passwd="***")
 bank_cursor = db_connector.cursor()
 bank_cursor.execute("CREATE DATABASE IF NOT EXISTS Geshbank")
+#bank_cursor.execute("CREATE TABLE IF NOT EXISTS Geshbank.Vovochka (Aaa int, Bbb int, Ccc varchar(255))")
 engine = create_engine('mysql+mysqldb://lexbrown:***@localhost/Geshbank', echo=False)
 
 capital = 100000
