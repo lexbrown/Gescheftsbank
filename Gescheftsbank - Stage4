@@ -1,6 +1,6 @@
 #Geschaftsbank - Stage4 (MySQL + cash management)
 
-###############################################
+'''
 
 lex = pd.read_sql_query('SELECT EndDate FROM geshbank.loan_accounts WHERE ClientId = 3042', con = engine)
 проблема - он считывает данные как строковые значения
@@ -12,9 +12,7 @@ lex = pd.read_sql_query('SELECT EndDate FROM geshbank.loan_accounts WHERE Client
 
 Другой вариант решения (менее предпочтительный): при написаннии запроса кастить поля. Минус: кастить придётся каждый раз.
 
-###############################################
-
-
+'''
 
 
 #Основные задачи:
