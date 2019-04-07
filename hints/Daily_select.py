@@ -28,3 +28,12 @@ foo_insert = "INSERT INTO Foobar.Bar (Foo1, Foo2, Foo3) VALUES (%s, %s, %s)"
 val = (12, "snafu", 2.5)
 foo_cursor.execute(foo_insert, val)
 foo_connector.commit()
+
+daily_select = "SELECT * FROM Foobar.Bar WHERE Foo1 = %s"
+daily_number = (12, )
+
+foo_cursor.execute(daily_select, daily_number)
+foo_result = foo_cursor.fetchall()
+
+for x in foo_result:
+  print(x)
