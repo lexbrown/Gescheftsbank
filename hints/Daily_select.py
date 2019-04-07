@@ -24,12 +24,20 @@ crTable_bar = "CREATE TABLE IF NOT EXISTS Foobar.Bar \
 foo_cursor.execute(crTable_bar)
 
 foo_insert = "INSERT INTO Foobar.Bar (Foo1, Foo2, Foo3) VALUES (%s, %s, %s)"
-val = (12, "snafu", 2.5)
-foo_cursor.execute(foo_insert, val)
+val = [(12, "snafu", 2.5),
+       (13, "tarfu", 3.5),
+       (14, "fubar", 4.5),
+       (15, "foooo", 5.5)]
+foo_cursor.executemany(foo_insert, val)
 foo_connector.commit()
 
-daily_select = "SELECT * FROM Foobar.Bar WHERE Foo1 = %s"
-daily_number = (12, )
+daily_select = "SELECT * FROM Foobar.Bar WHERE Foo1 = %s OR Foo2 = %s"
+daily_number = (12, 'tarfu')
 
 foo_cursor.execute(daily_select, daily_number)
 foo_result = pd.DataFrame(foo_cursor.fetchall())
+
+daily_update = "UPDATE Foobar.Bar SET Foo3 = %s WHERE Foo1 >= %s"
+val_update = (8.4, 14)
+foo_cursor.execute(daily_update, val_update)
+foo_connector.commit()
