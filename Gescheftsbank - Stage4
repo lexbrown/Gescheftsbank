@@ -185,16 +185,52 @@ for i in range(days):   #номер дня это i+1
         daily_inflow += beginQ
             
 #вечер
+    
+    #кредиты
+    evening_frame = pd.read_sql_query("SELECT * FROM Geshbank.loan_accounts WHERE EndDate = %s", con = engine, params = (i+1, ))
+#    for n in range(len(evening_frame)):
+#        print('lol')
+    closing_update = "UPDATE Geshbank.loan_accounts SET Status = %s WHERE EndDate = %s"
+    closing_values = ('Closed', i+1)
+    bank_cursor.execute(closing_update, closing_values)
+    db_connector.commit()  
+    loanaccount -= np.sum(evening_frame['BeginQ'])
+    evening_default_frame = pd.read_sql_query("SELECT * FROM Geshbank.loan_accounts WHERE EndDate = %s AND DefaultFunc >= 1", con = engine, params = (i+1, ))
+    daily_inflow += np.sum(pd.read_sql_query("SELECT BeginQ * (1 - LGD) AS Repayment FROM Geshbank.loan_accounts WHERE EndDate = %s AND DefaultFunc >= 1", con = engine, params = (i+1, )))
+    default_losses += np.sum(pd.read_sql_query("SELECT BeginQ * LGD AS Losses FROM Geshbank.loan_accounts WHERE EndDate = %s AND DefaultFunc >= 1", con = engine, params = (i+1, )))
+    interestincome += np.sum(pd.read_sql_query("SELECT BeginQ * (InterestRate * (EndDate - BeginDate) / 252) AS Income FROM Geshbank.loan_accounts WHERE EndDate = %s AND DefaultFunc < 1", con = engine, params = (i+1, )))
+    daily_inflow += np.sum(pd.read_sql_query("SELECT EndQ FROM Geshbank.loan_accounts WHERE EndDate = %s AND DefaultFunc < 1", con = engine, params = (i+1, )))
+
+    #депозиты
+    evening_frame = pd.read_sql_query("SELECT * FROM Geshbank.deposit_accounts WHERE EndDate = %s", con = engine, params = (i+1, ))
+    closing_update = "UPDATE Geshbank.deposit_accounts SET Status = %s WHERE EndDate = %s"
+    closing_values = ('Closed', i+1)
+    bank_cursor.execute(closing_update, closing_values)
+    db_connector.commit()
+    liabilities -= np.sum(evening_frame['BeginQ'])
+    interestcosts += np.sum(pd.read_sql_query("SELECT SUM(BeginQ * (0.03 * (EndDate - BeginDate) / 252)) AS Cost FROM Geshbank.deposit_accounts WHERE EndDate = %s AND AccType = 'D'", con = engine, params = (i+1, )))
+    interestcosts += np.sum(pd.read_sql_query("SELECT SUM(BeginQ * (0.01 * (EndDate - BeginDate) / 252)) AS Cost FROM Geshbank.deposit_accounts WHERE EndDate = %s AND AccType = 'O/N - D'", con = engine, params = (i+1, )))
+    daily_outflow += np.sum(pd.read_sql_query("SELECT EndQ FROM Geshbank.deposit_accounts WHERE EndDate = %s", con = engine, params = (i+1, )))
+    operationcosts += 200
+    daily_outflow += 200
+    
+
+    '''
     for n in range(len(open_loan_accounts)): #вечерняя проверка кредитных счетов
         if open_loan_accounts.loc[n, 'EndDate'] == i+1 and open_loan_accounts.loc[n, 'Status'] == 'Active':
             open_loan_accounts.loc[n, 'Status'] = 'Closed'
             loanaccount -= open_loan_accounts.loc[n, 'BeginQ']
-            if open_loan_accounts.loc[n, 'Default function'] >= 1: #Если дефолт
-                daily_inflow += (open_loan_accounts.loc[n, 'BeginQ'] * (1 - open_loan_accounts.loc[n, 'LGD']))
-                default_losses += (open_loan_accounts.loc[n, 'BeginQ'] * open_loan_accounts.loc[n, 'LGD'])
+            if open_loan_accounts.loc[n, 'AccType'] != 'O/N - L': #можно грамотнее: если дефолтный и L - тогда признать убыток. Иначе - нет
+                #reserve_recovery += (open_loan_accounts.loc[n, 'BeginQ'] * open_loan_accounts.loc[n, 'LGD'] * open_loan_accounts.loc[n, 'PD'])
+                if open_loan_accounts.loc[n, 'Default function'] >= 1: #Если дефолт
+                    daily_inflow += (open_loan_accounts.loc[n, 'BeginQ'] * (1 - open_loan_accounts.loc[n, 'LGD']))
+                    default_losses += (open_loan_accounts.loc[n, 'BeginQ'] * open_loan_accounts.loc[n, 'LGD'])
+                else:
+                    interestincome += open_loan_accounts.loc[n, 'BeginQ'] * (open_loan_accounts.loc[n, 'Interest rate'] * (open_loan_accounts.loc[n, 'EndDate'] - open_loan_accounts.loc[n, 'BeginDate']) / 252)
+                    daily_inflow += (open_loan_accounts.loc[n, 'BeginQ'] * (1 + (open_loan_accounts.loc[n, 'Interest rate'] * (open_loan_accounts.loc[n, 'EndDate'] - open_loan_accounts.loc[n, 'BeginDate']) / 252)))
             else:
-                interestincome += open_loan_accounts.loc[n, 'BeginQ'] * open_loan_accounts.loc[n, 'Interest rate']
-                daily_inflow += (open_loan_accounts.loc[n, 'BeginQ'] * (1 + open_loan_accounts.loc[n, 'Interest rate']))
+                interestincome += open_loan_accounts.loc[n, 'BeginQ'] * (open_loan_accounts.loc[n, 'Interest rate'] * (open_loan_accounts.loc[n, 'EndDate'] - open_loan_accounts.loc[n, 'BeginDate']) / 252)
+                daily_inflow += (open_loan_accounts.loc[n, 'BeginQ'] * (1 + (open_loan_accounts.loc[n, 'Interest rate'] * (open_loan_accounts.loc[n, 'EndDate'] - open_loan_accounts.loc[n, 'BeginDate']) / 252)))
             closed_loan_accounts.loc[id_loan_closed] = open_loan_accounts.loc[n]
             id_loan_closed += 1
     for n in range(len(open_deposit_accounts)): #вечерняя проверка депозитных счетов
@@ -202,45 +238,85 @@ for i in range(days):   #номер дня это i+1
             open_deposit_accounts.loc[n, 'Status'] = 'Closed'
             if open_deposit_accounts.loc[n, 'AccType'] == 'D':
                 liabilities -= open_deposit_accounts.loc[n, 'BeginQ']
-                interestcosts += open_deposit_accounts.loc[n, 'BeginQ'] * 0.03
-                daily_outflow += (open_deposit_accounts.loc[n, 'BeginQ'] * 1.03)
+                interestcosts += open_deposit_accounts.loc[n, 'BeginQ'] * (0.03 * (open_deposit_accounts.loc[n, 'EndDate'] - open_deposit_accounts.loc[n, 'BeginDate']) / 252)
+                daily_outflow += (open_deposit_accounts.loc[n, 'BeginQ'] * (1 + (0.03 * (open_deposit_accounts.loc[n, 'EndDate'] - open_deposit_accounts.loc[n, 'BeginDate']) / 252)))
             else: #open_deposit_accounts.loc[n, 'AccType'] == 'O/N':
                 liabilities -= open_deposit_accounts.loc[n, 'BeginQ']
-                interestcosts += open_deposit_accounts.loc[n, 'BeginQ'] * 0.01
-                daily_outflow += (open_deposit_accounts.loc[n, 'BeginQ'] * 1.01)
+                interestcosts += open_deposit_accounts.loc[n, 'BeginQ'] * (0.01 * (open_deposit_accounts.loc[n, 'EndDate'] - open_deposit_accounts.loc[n, 'BeginDate']) / 252)
+                daily_outflow += (open_deposit_accounts.loc[n, 'BeginQ'] * (1 + (0.01 * (open_deposit_accounts.loc[n, 'EndDate'] - open_deposit_accounts.loc[n, 'BeginDate']) / 252)))
             #начать closedaccounts
             closed_deposit_accounts.loc[id_deposit_closed] = open_deposit_accounts.loc[n]
             id_deposit_closed += 1
     operationcosts += 200
     daily_outflow += 200
+    '''
+
+
+    #вечерние проверки
     if cash() < 0:
-        accType = 'O/N'
+        accType = 'O/N - D'
         clientId = id + 1
         beginDate = i + 1
         endDate = i + 2
-        beginQ = -2 * cash()
-        endQ = beginQ * 1.01
+        beginQ = int(-cash() + assets() * 0.1)
+        endQ = round(beginQ * (1 + risk_free_rate * (endDate - beginDate) / 252), 2)
         status = 'Active'
-        newcostomer = [accType, clientId, beginDate, endDate, beginQ, endQ, status]
-        open_deposit_accounts.loc[len(open_deposit_accounts)] = newcostomer
+        pd.DataFrame([{'AccType':accType, 'ClientId':clientId, 'BeginDate':beginDate, 'EndDate':endDate, 'BeginQ':beginQ, 'EndQ':endQ, 'Status':status}]).to_sql('deposit_accounts', con = engine, index = False, if_exists = 'append')
         id += 1
         liabilities += beginQ
         daily_inflow += beginQ
+    elif cash() < (assets() * 0.05):
+        accType = 'O/N - D'
+        clientId = id + 1
+        beginDate = i + 1
+        endDate = i + 2
+        beginQ = int(assets() * 0.1)
+        endQ = round(beginQ * (1 + risk_free_rate * (endDate - beginDate) / 252), 2)
+        status = 'Active'
+        pd.DataFrame([{'AccType':accType, 'ClientId':clientId, 'BeginDate':beginDate, 'EndDate':endDate, 'BeginQ':beginQ, 'EndQ':endQ, 'Status':status}]).to_sql('deposit_accounts', con = engine, index = False, if_exists = 'append')
+        id += 1
+        liabilities += beginQ
+        daily_inflow += beginQ
+    elif cash() > (assets() * 0.20):
+        accType = 'O/N - L'
+        clientId = id + 1
+        beginDate = i + 1
+        endDate = i + 2
+        beginQ = int(cash() - assets() * 0.15)
+        status = 'Active'
+        prob_d = 0
+        lgd = 0
+        interest_rate = risk_free_rate
+        endQ = round(beginQ * (1 + interest_rate * (endDate - beginDate) / 252), 2)
+        random_default = random.choice(range(1, 101))/100
+        default_function = random_default * np.exp(prob_d)
+        pd.DataFrame([{'AccType':accType, 'ClientId':clientId, 'BeginDate':beginDate, 'EndDate':endDate, 
+                      'BeginQ':beginQ, 'EndQ':endQ, 'PD':prob_d, 'LGD':lgd, 'InterestRate':interest_rate, 'Status':status,
+                       'Random':random_default, 'DefaultFunc':default_function}]).to_sql('loan_accounts', con = engine, index = False, if_exists = 'append')
+        id += 1
+        loanaccount += beginQ
+        daily_outflow += beginQ
+    else:
+        True
         
+    '''        
+    #openaccounts = openaccounts.drop(np.where(openaccounts["Status"] == "Closed")[0]) - не работает более чем для 6 дней
     open_loan_accounts = open_loan_accounts[open_loan_accounts.Status != "Closed"] #это ужасно
     open_deposit_accounts = open_deposit_accounts[open_deposit_accounts.Status != "Closed"] #дублирование - вообще ужас
     open_loan_accounts.index = np.arange(len(open_loan_accounts))
     open_deposit_accounts.index = np.arange(len(open_deposit_accounts))
+    '''
     #operationcosts += 200
     #daily_outflow += 200
     placcount()
-    cash_balance.loc[i] = [i+1, cash(), daily_outflow, daily_inflow]
-    assets_series.loc[i] = [i+1, assets()]
+    pd.DataFrame([{'DayNumber':i+1, 'CashBalance':cash(), 'AssetBalance':assets(), 'DailyCashInflow':daily_inflow, 'DailyCashOutflow':daily_outflow}]).to_sql('balance_frame', con = engine, index = False, if_exists = 'append')
     daily_outflow = 0
     daily_inflow = 0
+    #cash_balance[i] = cash()
+    #cash_balance.index = np.arange(days)
+    #placcount()
     print("День ", i+1)
-#cash_balance.index = cash_balance['DayNumber'] - может и зря закомментил
-#assets_series.index = assets_series['DayNumber']
+
 #Reports:
 
 #Graphical Report
