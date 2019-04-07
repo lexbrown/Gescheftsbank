@@ -81,8 +81,8 @@ loanaccount = 0
 operationcosts = 0
 default_losses = 0
 
-reserve_expenses = 0
-reserve_recovery = 0
+#reserve_expenses = 0
+#reserve_recovery = 0
 
 risk_free_rate = 0.06
 
