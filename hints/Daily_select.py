@@ -32,7 +32,4 @@ daily_select = "SELECT * FROM Foobar.Bar WHERE Foo1 = %s"
 daily_number = (12, )
 
 foo_cursor.execute(daily_select, daily_number)
-foo_result = foo_cursor.fetchall()
-
-for x in foo_result:
-  print(x)
+foo_result = pd.DataFrame(foo_cursor.fetchall())
