@@ -93,47 +93,19 @@ daily_inflow = 0
 
 days =  int(input("Введите количество дней: ")) #перевести на инпуты
 max_clients = int(input("Введите максимальное количество клиентов в день: "))
-id_loan_closed = 0
-id_deposit_closed = 0
 
 
 
-"""
-loan_accounts = pd.DataFrame(columns = ['AccType', 'ClientId', 'BeginDate', 'EndDate', 'BeginQ', 'EndQ', 'PD', 'LGD', 
-                                   'InterestRate','Status', 'Random', 'DefaultFunc'])
-pd.DataFrame(loan_accounts).to_sql('loan_accounts', con = engine, index = False, if_exists = 'replace')
-deposit_accounts = pd.DataFrame(columns = ['AccType', 'ClientId', 'BeginDate', 'EndDate', 'BeginQ', 'EndQ', 'Status'])
-pd.DataFrame(deposit_accounts).to_sql('deposit_accounts', con = engine, index = False, if_exists = 'replace')
-balance_frame = pd.DataFrame(columns = ['DayNumber', 'CashBalance', 'AssetBalance', 'DailyCashInflow', 'DailyCashOutflow'])
-balance_frame.to_sql('balance_frame', con = engine, index = False, if_exists = 'replace')
-"""
+id = 0
 
-
-
-
-
-
-'''
-assets_series = pd.DataFrame(columns = ['DayNumber', 'Assets'])
-assets_series.to_sql('assets_series', con = engine, index = False, if_exists = 'replace')
-'''
-
-
-
-
-
-
-#cash_balance = pd.Series([0])
-id = 0  #len(openaccounts) 
-
-def assets():
+def assets(): #Активы
     return capital + netincome() + liabilities
-def cash():
+def cash(): #Наличка
     return assets() - loanaccount
-def placcount():
+def placcount(): #Чистая процентная маржа
     return interestincome - interestcosts
-def reserves():
-    return reserve_expenses - reserve_recovery
+#def reserves():
+#    return reserve_expenses - reserve_recovery
 def netincome():
     return placcount() - operationcosts - default_losses
 
@@ -153,10 +125,12 @@ for i in range(days):   #номер дня это i+1
         beginQ = random.choice(range(1, 101))*100
         if beginQ > cash():
             continue
+        if netincome() + capital < assets() * 0.1:
+            continue
         status = 'Active'
-        prob_d = random.choice(range(1, 21))/100
-        lgd = round(np.random.beta(2, 4), 1) + 0.1
-        interest_rate = round((risk_free_rate + prob_d * lgd) /(1 - prob_d), 4)
+        prob_d = round(np.random.beta(1, 7) / 10 + 0.01, 2)
+        lgd = round(np.random.beta(1, 7), 2)
+        interest_rate = round((risk_free_rate + prob_d * lgd) /(1 - prob_d) + 0.015, 4)
         endQ = round(beginQ * (1 + interest_rate * (endDate - beginDate) / 252), 2)
         random_default = random.choice(range(1, 101))/100
         default_function = random_default * np.exp(prob_d)
@@ -168,8 +142,10 @@ for i in range(days):   #номер дня это i+1
         id += 1
         loanaccount += beginQ
         daily_outflow += beginQ
-        reserve_expenses += (beginQ * prob_d * lgd)
+        #reserve_expenses += (beginQ * prob_d * lgd)
     for n in range(int(randnumdeposits)):
+        if netincome() + capital < assets() * 0.1:
+            continue
         accType = 'D'
         clientId = id + 1
         beginDate = i + 1
@@ -183,7 +159,7 @@ for i in range(days):   #номер дня это i+1
         id += 1
         liabilities += beginQ
         daily_inflow += beginQ
-            
+
 #вечер
     
     #кредиты
@@ -194,12 +170,13 @@ for i in range(days):   #номер дня это i+1
     closing_values = ('Closed', i+1)
     bank_cursor.execute(closing_update, closing_values)
     db_connector.commit()  
-    loanaccount -= np.sum(evening_frame['BeginQ'])
-    evening_default_frame = pd.read_sql_query("SELECT * FROM Geshbank.loan_accounts WHERE EndDate = %s AND DefaultFunc >= 1", con = engine, params = (i+1, ))
-    daily_inflow += np.sum(pd.read_sql_query("SELECT BeginQ * (1 - LGD) AS Repayment FROM Geshbank.loan_accounts WHERE EndDate = %s AND DefaultFunc >= 1", con = engine, params = (i+1, )))
-    default_losses += np.sum(pd.read_sql_query("SELECT BeginQ * LGD AS Losses FROM Geshbank.loan_accounts WHERE EndDate = %s AND DefaultFunc >= 1", con = engine, params = (i+1, )))
-    interestincome += np.sum(pd.read_sql_query("SELECT BeginQ * (InterestRate * (EndDate - BeginDate) / 252) AS Income FROM Geshbank.loan_accounts WHERE EndDate = %s AND DefaultFunc < 1", con = engine, params = (i+1, )))
-    daily_inflow += np.sum(pd.read_sql_query("SELECT EndQ FROM Geshbank.loan_accounts WHERE EndDate = %s AND DefaultFunc < 1", con = engine, params = (i+1, )))
+    loanaccount -= float(np.sum(evening_frame['BeginQ']))
+    #evening_default_frame = pd.read_sql_query("SELECT * FROM Geshbank.loan_accounts WHERE EndDate = %s AND DefaultFunc >= 1", con = engine, params = (i+1, ))
+    daily_inflow += ((pd.read_sql_query("SELECT SUM(BeginQ * (1 - LGD)) AS Repayment FROM Geshbank.loan_accounts WHERE EndDate = %s AND DefaultFunc >= 1", con = engine, params = (i+1, ))).sum(axis = 0)).iat[0]
+    #default_losses += np.sum(pd.read_sql_query("SELECT BeginQ * LGD AS Losses FROM Geshbank.loan_accounts WHERE EndDate = %s AND DefaultFunc >= 1", con = engine, params = (i+1, )))
+    default_losses += ((pd.read_sql_query("SELECT SUM(BeginQ * LGD) AS Losses FROM Geshbank.loan_accounts WHERE EndDate = %s AND DefaultFunc >= 1", con = engine, params = (i+1, ))).sum(axis = 0)).iat[0]
+    interestincome += ((pd.read_sql_query("SELECT SUM(BeginQ * (InterestRate * (EndDate - BeginDate) / 252)) AS Income FROM Geshbank.loan_accounts WHERE EndDate = %s AND DefaultFunc < 1", con = engine, params = (i+1, ))).sum(axis = 0)).iat[0]
+    daily_inflow += ((pd.read_sql_query("SELECT SUM(EndQ) FROM Geshbank.loan_accounts WHERE EndDate = %s AND DefaultFunc < 1", con = engine, params = (i+1, ))).sum(axis = 0)).iat[0]
 
     #депозиты
     evening_frame = pd.read_sql_query("SELECT * FROM Geshbank.deposit_accounts WHERE EndDate = %s", con = engine, params = (i+1, ))
@@ -208,11 +185,11 @@ for i in range(days):   #номер дня это i+1
     bank_cursor.execute(closing_update, closing_values)
     db_connector.commit()
     liabilities -= np.sum(evening_frame['BeginQ'])
-    interestcosts += np.sum(pd.read_sql_query("SELECT SUM(BeginQ * (0.03 * (EndDate - BeginDate) / 252)) AS Cost FROM Geshbank.deposit_accounts WHERE EndDate = %s AND AccType = 'D'", con = engine, params = (i+1, )))
-    interestcosts += np.sum(pd.read_sql_query("SELECT SUM(BeginQ * (0.01 * (EndDate - BeginDate) / 252)) AS Cost FROM Geshbank.deposit_accounts WHERE EndDate = %s AND AccType = 'O/N - D'", con = engine, params = (i+1, )))
-    daily_outflow += np.sum(pd.read_sql_query("SELECT EndQ FROM Geshbank.deposit_accounts WHERE EndDate = %s", con = engine, params = (i+1, )))
-    operationcosts += 200
-    daily_outflow += 200
+    interestcosts += ((pd.read_sql_query("SELECT SUM(BeginQ * (0.03 * (EndDate - BeginDate) / 252)) AS Cost FROM Geshbank.deposit_accounts WHERE EndDate = %s AND AccType = 'D'", con = engine, params = (i+1, ))).sum(axis = 0)).iat[0]
+    interestcosts += ((pd.read_sql_query("SELECT SUM(BeginQ * (0.06 * (EndDate - BeginDate) / 252)) AS Cost FROM Geshbank.deposit_accounts WHERE EndDate = %s AND AccType = 'O/N - D'", con = engine, params = (i+1, ))).sum(axis = 0)).iat[0]
+    daily_outflow += ((pd.read_sql_query("SELECT SUM(EndQ) FROM Geshbank.deposit_accounts WHERE EndDate = %s", con = engine, params = (i+1, ))).sum(axis = 0)).iat[0]
+    operationcosts += 20
+    daily_outflow += 20
     
 
     '''
@@ -317,6 +294,7 @@ for i in range(days):   #номер дня это i+1
     #placcount()
     print("День ", i+1)
 
+
 #Reports:
 
 #Graphical Report
@@ -331,11 +309,12 @@ balancesheet = pd.DataFrame([[loanaccount, 0], [cash(), 0],
                         [0, capital], [0, netincome()], [0, liabilities]], 
     index = ['Loans', 'Cash', 'Equity', 'RE', 'Debt'], 
     columns = ['Assets', 'Equity and Debt'])
-incomestatement = pd.DataFrame([interestincome, interestcosts, 
-                                placcount(), operationcosts, default_losses, netincome()], 
-    index = ['Interest income', 'Interest costs (-)', 'Net interest income', 
+incomestatement = pd.DataFrame([interestincome, interestcosts, placcount(),
+                                operationcosts, default_losses, netincome()], 
+    index = ['Interest income', 'Interest costs (-)', 'NIM', 
              'Operating costs (-)', 'Default losses (-)', 'Net income'], 
     columns = ['Accounts'])
+#incomestatement.index.name = "P&L accounts"
 
 balancesheet.T.plot(grid = True, rot = 0, ax = ax1, kind = "bar", stacked = True, fontsize = 12)
 ax1.set_ylabel("U.S. dollars", fontsize = 15)
@@ -350,25 +329,30 @@ ax2.barh(incomestatement.index, incomestatement.Accounts)
 ax2.invert_yaxis()
 ax2.grid(True)
 
-cash_balance['Balance'].plot(grid = True, ax = ax3, marker = 'D', fontsize = 12, color = 'r')
+
+cash_balance = pd.read_sql('SELECT * FROM Geshbank.Balance_frame', con = engine)
+#cash_balance['CashBalance'].plot(grid = True, ax = ax3, marker = 'D', fontsize = 12, color = 'orange')
+cash_balance['CashBalance'].plot(grid = True, ax = ax3, fontsize = 12, color = 'orange')
 #ax3.fill_between(cash_balance['DayNumber'], cash_balance['Balance'], color = 'r')
-assets_series['Assets'].plot(grid = True, ax = ax3, marker = 'o', fontsize = 12, color = 'y')
+asset_balance = pd.read_sql('SELECT * FROM Geshbank.Balance_frame', con = engine)
+#asset_balance['AssetBalance'].plot(grid = True, ax = ax3, marker = 'o', fontsize = 12, color = 'red')
+asset_balance['AssetBalance'].plot(grid = True, ax = ax3, fontsize = 12, color = 'red')
 ax3.set_ylabel("U.S. dollars", fontsize = 15)
 ax3.set_title("Cash balance", fontsize = 25)
 ax3.legend(loc="best", fontsize = 12)
 
-cash_balance['Daily outflows'].plot(grid = True, ax = ax4, marker = 's', fontsize = 12, color = 'g')
-cash_balance['Daily inflows'].plot(grid = True, ax = ax4, marker = 'v', fontsize = 12, color = 'b')
+cash_balance['DailyCashOutflow'].plot(grid = True, ax = ax4, marker = 's', fontsize = 12, color = 'g')
+cash_balance['DailyCashInflow'].plot(grid = True, ax = ax4, marker = 'v', fontsize = 12, color = 'b')
 ax4.set_title("Daily flows", fontsize = 25)
 ax4.legend(loc="best", fontsize = 12)
+#ax4.set_xticks(cash_balance['DayNumber'])
 
-unionframe = pd.concat([closed_loan_accounts, open_loan_accounts], axis = 0)
+unionframe = pd.read_sql('SELECT * FROM Geshbank.loan_accounts', con = engine)
 unionframe.index = np.arange(len(unionframe))
-
 ax5.hist(unionframe['LGD'], bins = 11)
 ax5.set_title("LGD Distribution", fontsize = 25)
 
-ax6.hist(unionframe['PD'], bins = 21)
+ax6.hist(unionframe['PD'], bins = 8)
 ax6.set_title("PD Distribution", fontsize = 25)
 
 plt.subplots_adjust(wspace=0.5)
@@ -386,14 +370,34 @@ print()
 print(incomestatement)
 print()
 print('Овернайты на рынке межбанковских кредитов брались ', 
-      len(closed_deposit_accounts.loc[closed_deposit_accounts.AccType == 'O/N']) +
-      len(open_deposit_accounts.loc[open_deposit_accounts.AccType == 'O/N']),
+      ((pd.read_sql("SELECT COUNT(*) FROM geshbank.deposit_accounts WHERE AccType = 'O/N - D'", con = engine)).sum(axis = 0)).iat[0],
       ' раз:')
-if len(closed_deposit_accounts.loc[closed_deposit_accounts.AccType == 'O/N']) != 0:
-    print(closed_deposit_accounts.loc[closed_deposit_accounts.AccType == 'O/N'])
-if len(open_deposit_accounts.loc[open_deposit_accounts.AccType == 'O/N']) != 0:
-    print(open_deposit_accounts.loc[open_deposit_accounts.AccType == 'O/N'])
 
-#гипотеза: RE коррелирует с кэшем
-#Внедрить Statsmodel в 4й версии
-#Внедрить этап "Утро" - проверка условий 
+'''
+if len(closed_deposit_accounts.loc[closed_deposit_accounts.AccType == 'O/N - D']) != 0:
+    print(closed_deposit_accounts.loc[closed_deposit_accounts.AccType == 'O/N - D'])
+if len(open_deposit_accounts.loc[open_deposit_accounts.AccType == 'O/N - D']) != 0:
+    print(open_deposit_accounts.loc[open_deposit_accounts.AccType == 'O/N - D'])
+'''
+
+    
+print('Овернайты на рынке межбанковских кредитов давались ', 
+       ((pd.read_sql("SELECT COUNT(*) FROM geshbank.loan_accounts WHERE AccType = 'O/N - L'", con = engine)).sum(axis = 0)).iat[0],
+      ' раз:')
+
+'''
+if len(closed_loan_accounts.loc[closed_loan_accounts.AccType == 'O/N - L']) != 0:
+    print(closed_loan_accounts.loc[closed_loan_accounts.AccType == 'O/N - L'])
+if len(open_loan_accounts.loc[open_loan_accounts.AccType == 'O/N - L']) != 0:
+    print(open_loan_accounts.loc[open_loan_accounts.AccType == 'O/N - L'])
+'''
+    
+question = input('Сохраняем весь этот ужас? ')
+if question == 'y':
+    ladf = pd.read_sql('SELECT * FROM Geshbank.loan_accounts', con = engine)
+    ladf.to_excel('Loan_accounts_Stage4.xlsx')
+    dadf = pd.read_sql('SELECT * FROM Geshbank.deposit_accounts', con = engine)
+    dadf.to_excel('Deposit_accounts_Stage4.xlsx')
+    bfdf = pd.read_sql('SELECT * FROM Geshbank.Balance_frame', con = engine)
+    bfdf.to_excel('Balance_frame_Stage4.xlsx')
+
