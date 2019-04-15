@@ -23,3 +23,8 @@ for i in range(len(age_classifier)):
     if n in age_classifier.iloc[i, 0]:
         n_score = age_classifier.iloc[i, 1]
         print(n_score)
+        break
+    else:
+        print('foobar')
+
+print('ololo')
