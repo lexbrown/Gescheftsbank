@@ -580,11 +580,13 @@ if len(open_loan_accounts.loc[open_loan_accounts.AccType == 'O/N - L']) != 0:
 question = input('Сохраняем весь этот ужас? ')
 if question == 'y':
     ladf = pd.read_sql('SELECT * FROM Geshbank.loan_accounts', con = engine)
-    ladf.to_excel('Loan_accounts_Stage4.xlsx')
+    ladf.to_excel('Loan_accounts_Stage5.xlsx')
     dadf = pd.read_sql('SELECT * FROM Geshbank.deposit_accounts', con = engine)
-    dadf.to_excel('Deposit_accounts_Stage4.xlsx')
+    dadf.to_excel('Deposit_accounts_Stage5.xlsx')
     bfdf = pd.read_sql('SELECT * FROM Geshbank.Balance_frame', con = engine)
-    bfdf.to_excel('Balance_frame_Stage4.xlsx')
+    bfdf.to_excel('Balance_frame_Stage5.xlsx')
+    afdf = pd.read_sql('SELECT * FROM Geshbank.Loan_applications', con = engine)
+    afdf.to_excel('Loan_applications_Stage5.xlsx')
 
     
 
