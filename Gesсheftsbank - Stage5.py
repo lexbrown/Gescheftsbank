@@ -202,14 +202,34 @@ for i in range(days):   #номер дня это i+1
     #if cash() > assets()/10:
     randnumapps = random.choice(range(200)) #чот сильно
     for n in range(int(randnumapps)):
-        idApp = q
+       idApp = q
         appType = random.choice(['Card', 'Consumer loan', 'Car loan', 'Mortgage', 'SP loan'])
         sex = random.choice(['M', 'F'])
         age = random.choice(range(18, 66))
-        education = random.choice(['Secondary', 'High school', 'Sharaga', 'Bachelor', 'Master', 'PhD', 'MBA'])
-        job = random.choice(['Unemployed', 'LowGrade', 'BlueCollar', 'Self-employed', 'WhiteCollar', 'MidMan', 'TopMan'])
-        experience = random.choice(range(40))
-        annualIncome = random.choice(range(10000, 3000000, 10000))
+        if age <= 25:
+            education = random.choice(['Secondary', 'High school', 'Sharaga', 'Bachelor', 'Master', 'PhD'])
+        else:
+            education = random.choice(['Secondary', 'High school', 'Sharaga', 'Bachelor', 'Master', 'PhD', 'MBA'])
+        #job = random.choice(['Unemployed', 'LowGrade', 'BlueCollar', 'Self-employed', 'WhiteCollar', 'MidMan', 'TopMan'])
+        #experience = random.choice(range(40))
+        if age < 30:
+            job = random.choice(['Unemployed', 'LowGrade', 'BlueCollar', 'Self-employed', 'WhiteCollar', 'MidMan'])
+            if job == 'Unemployed':
+                annualIncome = random.choice(range(0, 16000, 2000))
+            elif job in ['LowGrade', 'BlueCollar']:
+                annualIncome = random.choice(range(10000, 90000, 2000))
+            else:
+                annualIncome = random.choice(range(20000, 300000, 10000)) #переделать в бета-распределение
+        else:
+            job = random.choice(['Unemployed', 'LowGrade', 'BlueCollar', 'Self-employed', 'WhiteCollar', 'MidMan', 'TopMan'])
+            if job == 'Unemployed':
+                annualIncome = random.choice(range(0, 20000, 2000))
+            elif job in ['Self-employed', 'WhiteCollar', 'MidMan', 'TopMan']:
+                annualIncome = random.choice(range(100000, 300000, 10000)) 
+            else:
+                annualIncome = random.choice(range(10000, 100000, 2000)) 
+        experience = int((age - 18) * np.random.beta(6, 1))
+        #annualIncome = random.choice(range(10000, 3000000, 10000))
         ois = random.choice(range(0, 70000, 10000)) #other income sources
         burdenRateBefore = random.choice([0, random.choice(range(0, 16))/4])
         possessions = random.choice(['-', 'Poor', 'Middle', 'Good'])
