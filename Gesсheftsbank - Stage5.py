@@ -3,6 +3,7 @@
 #Основные задачи:
 #   МОДЕЛЬ КРЕДИТНОГО СКОРИНГА
 #   ПЛАТЁЖНЫЙ КАЛЕНДАРЬ
+#   Внедряю MySQL
 #   Сформировать резервы - пилот
 #   Дополнить проверки
 
@@ -132,7 +133,7 @@ apptype_classifier = pd.DataFrame([['Card', 0],
                                    ['SP loan', 1]], columns = ['AppType', 'Mark'])
 edu_classifier = pd.DataFrame([['Secondary', 0],
                                ['High school', 1],
-                               ['ComCollege', 2],
+                               ['Sharaga', 2],
                                ['Bachelor', 3],
                                ['Master', 4],
                                ['PhD', 5],
@@ -202,7 +203,7 @@ for i in range(days):   #номер дня это i+1
     #if cash() > assets()/10:
     randnumapps = random.choice(range(200)) #чот сильно
     for n in range(int(randnumapps)):
-       idApp = q
+        idApp = q
         appType = random.choice(['Card', 'Consumer loan', 'Car loan', 'Mortgage', 'SP loan'])
         sex = random.choice(['M', 'F'])
         age = random.choice(range(18, 66))
@@ -236,7 +237,10 @@ for i in range(days):   #номер дня это i+1
         creditHistory = random.choice(['-', 'Poor', 'Middle', 'Good'])
         appSum = random.choice(range(100, 500100, 100))
         duration = random.choice(range(21, 504, 21))
-        burdenRateAfter = round(burdenRateBefore + appSum / (annualIncome + ois), 1)
+        try:
+            burdenRateAfter = round(burdenRateBefore + appSum / (annualIncome + ois), 1)
+        except:
+            burdenRateAfter = 5 
         
         for cl in range(len(age_classifier)):
             if age in age_classifier.iloc[cl, 0]:
@@ -322,7 +326,8 @@ for i in range(days):   #номер дня это i+1
             clientId = id + 1
             beginDate = i + 1 #это чтобы дня О не было
             endDate = i + 1 + random.choice(range(2, 16)) * 10
-            beginQ = random.choice(range(1, 101))*100
+            #beginQ = random.choice(range(1, 101))*100
+            beginQ = appSum
             """
             if beginQ > cash():
                 continue
@@ -354,7 +359,7 @@ for i in range(days):   #номер дня это i+1
         clientId = id + 1
         beginDate = i + 1
         endDate = i + 1 + random.choice(range(2, 16)) * 10
-        beginQ = random.choice(range(1, 101))*100
+        beginQ = random.choice(range(1, 501))*1000
         endQ = round(beginQ * (1 + 0.03 * (endDate - beginDate) / 252), 2)
         status = 'Active'
         #newcustomer = [accType, clientId, beginDate, endDate, beginQ, endQ, status]
@@ -392,8 +397,8 @@ for i in range(days):   #номер дня это i+1
     interestcosts += ((pd.read_sql_query("SELECT SUM(BeginQ * (0.03 * (EndDate - BeginDate) / 252)) AS Cost FROM Geshbank.deposit_accounts WHERE EndDate = %s AND AccType = 'D'", con = engine, params = (i+1, ))).sum(axis = 0)).iat[0]
     interestcosts += ((pd.read_sql_query("SELECT SUM(BeginQ * (0.06 * (EndDate - BeginDate) / 252)) AS Cost FROM Geshbank.deposit_accounts WHERE EndDate = %s AND AccType = 'O/N - D'", con = engine, params = (i+1, ))).sum(axis = 0)).iat[0]
     daily_outflow += ((pd.read_sql_query("SELECT SUM(EndQ) FROM Geshbank.deposit_accounts WHERE EndDate = %s", con = engine, params = (i+1, ))).sum(axis = 0)).iat[0]
-    operationcosts += 20
-    daily_outflow += 20
+    operationcosts += 2000
+    daily_outflow += 2000
     
 
     '''
@@ -560,7 +565,7 @@ ax6.hist(unionframe['PD'], bins = 8)
 ax6.set_title("PD Distribution", fontsize = 25)
 
 plt.subplots_adjust(wspace=0.5)
-graphRep.savefig("Report - Stage 4.png")
+graphRep.savefig("Report - Stage 5.png")
 
 #Table reports:
 print()
