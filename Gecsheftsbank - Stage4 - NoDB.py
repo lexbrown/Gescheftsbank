@@ -1,4 +1,4 @@
-#Stage4 - No вфефифыу
+#Stage4 - No database
 
 #Geschaftsbank - Stage4. Внесение изменений
 
