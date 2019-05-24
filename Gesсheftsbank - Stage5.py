@@ -58,7 +58,7 @@ crTable_la = "CREATE TABLE IF NOT EXISTS Geshbank.loan_accounts \
                 Random DOUBLE(10, 4), \
                 DefaultFunc DOUBLE(10, 4))"
 crTable_da = "CREATE TABLE IF NOT EXISTS Geshbank.deposit_accounts \
-                (AccType VARCHAR(255), \
+                (AccType VARCHAR(255), \ 
                 ClientId INT, \
                 BeginDate INT, \
                 EndDate INT, \
