@@ -44,7 +44,7 @@ crTable_lapp = "CREATE TABLE IF NOT EXISTS Geshbank.loan_applications \
                 Category VARCHAR(255), \
                 Approvement VARCHAR(255))"
 crTable_la = "CREATE TABLE IF NOT EXISTS Geshbank.loan_accounts \
-                (AccType VARCHAR(255), \
+                (AccType VARCHAR(255), \ 
                 ClientId INT, \
                 IdApp INT, \
                 BeginDate INT, \
