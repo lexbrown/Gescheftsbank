@@ -15,7 +15,7 @@ from sqlalchemy import create_engine
 try:
     import pymysql
     pymysql.install_as_MySQLdb()
-except ImportError:
+except ImportError: 
     pass
 
 db_connector = cnt.connect(host="localhost", user="lexbrown", passwd="***")
