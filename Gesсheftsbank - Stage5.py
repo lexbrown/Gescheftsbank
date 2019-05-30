@@ -10,6 +10,7 @@ import pandas as pd
 import random
 import matplotlib.pyplot as plt
 import mysql.connector as cnt
+from tqdm import tqdm
 #import statsmodels.api as sm
 from sqlalchemy import create_engine
 try:
