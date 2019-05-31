@@ -5,7 +5,7 @@
 #   Сформировать резервы - пилот
 #   Дополнить проверки на балансовые показатели 
 
-import numpy as np 
+import numpy as np
 import pandas as pd
 import random
 import matplotlib.pyplot as plt
