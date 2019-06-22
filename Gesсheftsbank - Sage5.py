@@ -6,7 +6,7 @@
 #   Дополнить проверки на балансовые показатели
 #   Написать парсер тянущий данные отсюда https://www.cbr.ru/ 
 
-import numpy as np  
+import numpy as nm
 import pandas as pd
 import random
 import matplotlib.pyplot as plt
