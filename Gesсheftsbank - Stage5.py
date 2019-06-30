@@ -6,8 +6,6 @@
 #   Дополнить проверки на балансовые показатели
 #   Написать парсер тянущий данные отсюда https://www.cbr.ru/hd_base/ruonia/
 
-мамкина джигга дрыга
-
 import numpy as np
 import pandas as pd
 import random
