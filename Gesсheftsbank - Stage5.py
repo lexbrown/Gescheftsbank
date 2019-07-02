@@ -9,7 +9,7 @@
 import numpy as np
 import pandas as pd
 import random
-import matplotlib.pyplot as plut
+import matplotlib.pyplot as plt
 import mysql.connector as cnt
 from tqdm import tqdm
 #import statsmodels.api as sm
