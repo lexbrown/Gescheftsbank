@@ -9,7 +9,7 @@
 import numpy as np
 import pandas as pd
 import random
-import matplotlib.pyplot as pluton
+import matplotlib.pyplot as pluto
 import mysql.connector as cnt
 from tqdm import tqdm
 #import statsmodels.api as sm
