@@ -5,7 +5,6 @@
 #   Сформировать резервы - пилота
 #   Дополнить проверки на балансовые показатели
 #   Написать краулер, тянущий данные отсюда https://www.cbr.ru/hd_base/ruonia
-#   Натравить модели друг на друга
 
 import numpy as np
 import pandas as pd
@@ -20,6 +19,17 @@ try:
     pymysql.install_as_MySQLdb()
 except ImportError: 
     pass
+
+#косячный блок, надо переписать, пока так, проект:
+import requests
+from bs4 import BeautifulSoup
+url = 'https://www.cbr.ru/hd_base/ruonia/'
+r = requests.get(url)
+soup = BeautifulSoup(r.text, 'html.parser')
+rfr = soup.find_all('td', {'class':'right'})[0]
+
+
+
 
 db_connector = cnt.connect(host="localhost", user="lexbrown", passwd="***")
 bank_cursor = db_connector.cursor()
