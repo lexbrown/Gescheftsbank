@@ -26,7 +26,7 @@ from bs4 import BeautifulSoup
 url = 'https://www.cbr.ru/hd_base/ruonia/'
 r = requests.get(url)
 soup = BeautifulSoup(r.text, 'html.parser')
-rfr = soup.find_all('td', {'class':'right'})[0]
+rfr = soup.find_all('td', {'class':'right'})[0].get_text() #пока сохранено с запятой, это факап
 
 
 
