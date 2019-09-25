@@ -105,7 +105,7 @@ default_losses = 0
 #reserve_expenses = 0
 #reserve_recovery = 0
 
-risk_free_rate = rfr # раньше было 0.06, но теперь пусть будет rfr
+risk_free_rate = rfr/100 # раньше было 0.06, но теперь пусть будет rfr
 
 daily_outflow = 0
 daily_inflow = 0
