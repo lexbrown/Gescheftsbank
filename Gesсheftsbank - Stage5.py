@@ -19,6 +19,7 @@ try:
     pymysql.install_as_MySQLdb()
 except ImportError: 
     pass
+import sklearn
 
 #косячный блок, надо переписать, пока так, проект:
 import requests
