@@ -28,7 +28,7 @@ soup = BeautifulSoup(r.text, 'html.parser')
 rfr = soup.find_all('td', {'class':'right'})[0].get_text() #пока сохранено с запятой, это факап
 rfr = float(rfr.replace(',', '.'))
 
-db_connector = cnt.connect(host="localhost", user="lexbrown", passwd="7-4-1776")
+db_connector = cnt.connect(host="localhost", user="lexbrown", passwd="******")
 bank_cursor = db_connector.cursor()
 
 bank_cursor.execute("DROP DATABASE IF EXISTS Geshbank")
@@ -85,7 +85,7 @@ bank_cursor.execute(crTable_la)
 bank_cursor.execute(crTable_da)
 bank_cursor.execute(crTable_bf)
 bank_cursor.execute(crTable_lapp)
-engine = create_engine('mysql+mysqldb://lexbrown:7-4-1776@localhost/Geshbank', echo=False)
+engine = create_engine('mysql+mysqldb://lexbrown:******@localhost/Geshbank', echo=False)
 
 
 
