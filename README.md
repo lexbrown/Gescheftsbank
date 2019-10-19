@@ -7,9 +7,9 @@
 ### Annotation (ENG)
 A platform to test new solutions and business process. Our mission is to simulate the financial system whose starting point is a commercial bank.
 The project is conducted in order to simulate banking activities and financial companies' deals. The goal is to demonstrate an exposure to several finansial risks:
--Credit risk
--Market risk
--ALM-risks (including interest rate risk, foreign exchange risk, and liquidity risk)
+- Credit risk,
+- Market risk,
+- ALM-risks (including interest rate risk, foreign exchange risk, and liquidity risk).
 
 
 ### Аннотация (РУС)
