@@ -31,7 +31,7 @@ The project is conducted in order to simulate banking activities and financial c
 ### История проекта
 История проекта, ход работы и теоретические предпосылки описаны в соответствующем [репозитории](https://github.com/lexbrown/Gescheftsbank/tree/master/Politics)
 
-###Тестирование
+### Тестирование
 По результатам каждого испытания, проводится калибровка модели с целью улучшения параметров и повышения правдоподобия. 
 Результаты тестирования представлены в виде датасетов и соответствующих графиков в репозитории [Testing](https://github.com/lexbrown/Gescheftsbank/tree/master/testing)
 
