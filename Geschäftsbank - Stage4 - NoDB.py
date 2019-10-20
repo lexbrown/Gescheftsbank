@@ -1,6 +1,6 @@
 #Stage4 - No database 
 
-#Geschaftsbank - Stage4. Внесение изменений
+#Geschäftsbank - Stage4. Внесение изменений
 
 #Основные задачи:
 #   Ввести стохастические параметры клиентов
