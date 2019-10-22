@@ -27,6 +27,7 @@ from bs4 import BeautifulSoup
 from GBank_database_module import crTable_lapp, crTable_la, crTable_da, crTable_bf
 import warnings
 warnings.filterwarnings("ignore")
+import os
 
 
 
