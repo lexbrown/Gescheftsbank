@@ -151,12 +151,19 @@ ois_classifier = pd.DataFrame([[range(1), 0], #other income sources
                                 [range(11000, 51000, 1000), 2],
                                 [range(51000, 1000000, 1000), 3]], 
                                 columns = ['OIS', 'Mark'])
+'''
 brb_classifier = pd.DataFrame([[range(1), 3], #burden rate before
                                     [np.arange(0.05, 0.3, 0.05), 2],
                                     [np.arange(0.3, 1.05, 0.05), 1],
                                     [np.arange(1.05, 3.05, 0.05), 0],
                                     [np.arange(3.05, 10, 0.05), -3]], 
                                     columns = ['BRB', 'Mark'])
+'''
+brb_classifier = pd.DataFrame([[range(1), 3], #burden rate before
+                                    [np.round(np.arange(0.05, 0.3, 0.05), 2), 2],
+                                    [np.round(np.arange(0.3, 1.05, 0.05), 2), 1],
+                                    [np.round(np.arange(1.05, 3.05, 0.05), 2), 0],
+                                    [np.round(np.arange(3.05, 10, 0.05), 2), -3]])
 possessions_classifier = pd.DataFrame([['-', 0],
                                        ['Poor', 1],
                                        ['Middle', 2],
