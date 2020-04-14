@@ -8,7 +8,7 @@
 
 
 #============================= импорт модулей
-import numpy as np
+import numpy as nq
 import pandas as pd
 import random
 import matplotlib.pyplot as plt
