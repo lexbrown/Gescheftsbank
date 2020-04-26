@@ -66,7 +66,8 @@ bank_cursor.execute(crTable_lapp)
 
 
 #============================= введение основных переменных
-capital = 10000000
+capital = 100000000
+sec_portf = 30000000
 liabilities = 0
 interestincome = 0
 interestcosts = 0
@@ -95,7 +96,7 @@ def placcount(): #Чистая процентная маржа
 #def reserves():
 #    return reserve_expenses - reserve_recovery
 def netincome():
-    return placcount() - operationcosts - default_losses
+    return placcount() - operationcosts - default_losses + (sec_portf - 30000000)
 
 
 
@@ -197,6 +198,12 @@ q = 1 #специальная переменная для нумерации id 
 
 
 
+#============================= моделирование истории торгового портфеля
+sec_p = pd.Series(index = list(range(-252, days + 1)))
+np.random.seed(42)
+foobar = list(np.cumprod(1 + np.random.randn(252) * 0.02) * 30000000)[::-1]
+sec_p.loc[-252:-1] = foobar
+sec_p.loc[0] = 30000000
 
 
 
@@ -402,6 +409,12 @@ for i in tqdm(range(days)):   #номер дня это i+1
         daily_inflow += beginQ
 
 
+    #============Security portfolio
+    if i + 1 != 1:
+        sec_p[i + 1] = sec_p[i] * (1 + np.random.randn() * 0.02)
+    else:
+        sec_p[i + 1] = sec_portf * (1 + np.random.randn() * 0.02)
+    sec_portf = sec_p[i + 1]
 
 
 
@@ -543,6 +556,49 @@ for i in tqdm(range(days)):   #номер дня это i+1
     #print("День ", i+1)
 
 
+    
+    
+    
+
+#============================= Подведение итогов по портфелю, считаем VaR
+roi = sec_p.pct_change()
+roi = roi.dropna()
+
+level = 0.95
+def estimate_mu_sigma(r): 
+    return np.mean(r), np.std(r)
+def calc_VaR_normal(r_historical, level=0.95):
+    mu, sigma = estimate_mu_sigma(r_historical)
+    return - mu + ss.norm.ppf(level) * sigma
+def calc_VaR_historical(r_historical, level=0.95):
+    return np.quantile( - r_historical, level) #квантиль непараметрического распределения
+def calc_VaR(r, VaR_fun, L_history=252, level=0.95):
+    VaR = np.full(r.size, np.nan) #создаёт массив длинной 1762, заполненный нанами
+    for i in range(L_history, len(r)): #от 252 и до конца
+        history = r[i - L_history: i] #размер скользящего окна
+        VaR[i] = VaR_fun(history, level) #берем готовую функцию с прошлого примера
+    return pd.Series(data=VaR, index=r.index, name=VaR_fun.__name__) #ИНТЕРЕСНО
+
+VaR_normal = calc_VaR(roi, calc_VaR_normal, level=level)
+VaR_historical = calc_VaR(roi, calc_VaR_historical, level=level)
+
+#np.random.seed(40)
+#snafu = np.cumprod(1 + np.random.randn(600) * 0.02) * 30000000
+#sec_p.loc[1:600] = snafu
+#r = sec_p.pct_change()
+#r = r.dropna()
+
+#vals, grid, _ = plt.hist(r, 50, density = True)
+#plt.plot(grid, ss.norm(0, 0.02).pdf(grid), 'k')
+#bb = calc_VaR(r, calc_VaR_normal, level=level)
+
+#sec1  = sec_p.loc[-252:599]
+#sec1.index = list(range(-251,601))
+#((1-bb)*sec1 > (1+r)*sec1).to_csv('dfg.csv')
+#vv = pd.DataFrame(((1-bb)*sec1 > (1+r)*sec1), columns=['boolean'])
+#nn = vv[vv['boolean']==True]
+#np.mean(((1-bb)*sec1 - (1+r)*sec1).loc[nn.index.to_list()])
+
 
 
 
@@ -556,13 +612,13 @@ ax3 = graphRep.add_subplot(3, 2, 3)
 ax4 = graphRep.add_subplot(3, 2, 4)
 ax5 = graphRep.add_subplot(3, 2, 5)
 ax6 = graphRep.add_subplot(3, 2, 6)
-balancesheet = pd.DataFrame([[loanaccount, 0], [cash(), 0], 
+balancesheet = pd.DataFrame([[loanaccount, 0], [cash(), 0], [sec_portf, 0],
                         [0, capital], [0, netincome()], [0, liabilities]], 
-    index = ['Loans', 'Cash', 'Equity', 'RE', 'Debt'], 
+    index = ['Loans', 'Cash', 'Securities', 'Equity', 'RE', 'Debt'], 
     columns = ['Assets', 'Equity and Debt'])
-incomestatement = pd.DataFrame([interestincome, interestcosts, placcount(),
+incomestatement = pd.DataFrame([interestincome, interestcosts, placcount(), sec_portf - 30000000,
                                 operationcosts, default_losses, netincome()], 
-    index = ['Interest income', 'Interest costs (-)', 'NIM', 
+    index = ['Interest income', 'Interest costs (-)', 'NIM', 'Securities income',
              'Operating costs (-)', 'Default losses (-)', 'Net income'], 
     columns = ['Accounts'])
 #incomestatement.index.name = "P&L accounts"
