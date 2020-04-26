@@ -12,6 +12,7 @@ import numpy as np
 import pandas as pd
 import random
 import matplotlib.pyplot as plt
+import scipy.stats as ss
 #import seaborn as sns #отложить до следущего этапа
 import mysql.connector as cnt
 #import statsmodels.api as sm #отложим до следующего этапа
